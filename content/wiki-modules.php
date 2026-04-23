@@ -67,7 +67,7 @@ return [
         ],
         'contribution' => [
             'title' => 'Aporte documental inicial (legacy)',
-            'description' => 'Este documento es el aporte original del equipo sobre el flujo GitHub. Se integra como fuente documental dentro de la wiki, sin ser la vista principal.',
+            'description' => 'Este documento es el aporte original del equipo sobre el flujo GitHub. Se integra como fuente documental dentro de la wiki.',
             'source' => '/flujo-github-vermqen.html',
         ],
     ],
