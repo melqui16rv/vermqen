@@ -1,0 +1,26 @@
+{
+    "name": "melqui16rv/vermqen-wiki",
+    "description": "Wiki landing modular para VERMQEN",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.2",
+        "slim/slim": "^4.14",
+        "slim/psr7": "^1.7",
+        "slim/twig-view": "^3.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "scripts": {
+        "serve": "php -S localhost:8080 index.php"
+    },
+    "authors": [
+        {
+            "name": "melqui16rv",
+            "email": "120046235+melqui16rv@users.noreply.github.com"
+        }
+    ]
+}

@@ -1,0 +1,95 @@
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+  <a href="{{ homePath }}" class="btn btn-link text-decoration-none text-secondary ps-0 mb-3">
+    <i class="bi bi-arrow-left"></i> Volver al inicio
+  </a>
+
+  <section class="hero-card p-4 p-lg-5 mb-4" data-aos="fade-up" data-aos-duration="800">
+    <div class="d-flex flex-wrap gap-2 mb-3">
+      <span class="badge rounded-pill text-bg-dark border border-secondary-subtle">{{ module.tag }}</span>
+      <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis border border-primary-subtle">Wiki V1</span>
+    </div>
+    <h1 class="display-6 fw-bold mb-3">{{ module.title }}</h1>
+    <p class="lead text-secondary mb-0">{{ module.intro }}</p>
+  </section>
+
+  {% if module.contribution %}
+    <section class="glass-panel p-4 p-lg-5 mb-4" data-aos="fade-up" data-aos-delay="100">
+      <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
+        <div>
+          <h2 class="h5 mb-1">{{ module.contribution.title }}</h2>
+          <p class="text-secondary mb-0">{{ module.contribution.description }}</p>
+        </div>
+        <a class="btn btn-outline-info rounded-pill px-3" href="{{ module.contribution.source }}" target="_blank" rel="noopener noreferrer">
+          Abrir aporte en pestaña nueva
+        </a>
+      </div>
+      <iframe
+        class="legacy-embed"
+        src="{{ module.contribution.source }}"
+        title="{{ module.contribution.title }}"
+        loading="lazy"
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+      ></iframe>
+    </section>
+  {% endif %}
+
+  <section class="row g-3 g-lg-4 mb-4">
+    {% for pillar in module.pillars %}
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 70 }}">
+        <article class="module-card h-100 p-4">
+          <div class="icon-pill mb-3"><i class="bi {{ pillar.icon }}"></i></div>
+          <h2 class="h6">{{ pillar.title }}</h2>
+          <p class="text-secondary mb-0">{{ pillar.text }}</p>
+        </article>
+      </div>
+    {% endfor %}
+  </section>
+
+  <section class="row g-4" data-aos="fade-up" data-aos-delay="120">
+    <div class="col-lg-7">
+      <article class="glass-panel p-4 p-lg-5 h-100">
+        <h2 class="h5 mb-3">Flujo recomendado</h2>
+        <div class="d-flex flex-column gap-3">
+          {% for item in module.workflow %}
+            <div class="workflow-step p-3">
+              <p class="fw-semibold mb-1">{{ item.step }}</p>
+              <p class="text-secondary mb-2">{{ item.detail }}</p>
+              <code class="code-chip">{{ item.command }}</code>
+            </div>
+          {% endfor %}
+        </div>
+      </article>
+    </div>
+
+    <div class="col-lg-5">
+      <article class="glass-panel p-4 p-lg-5 mb-4">
+        <h2 class="h5 mb-3">Checklist antes del PR</h2>
+        <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+          {% for item in module.checklist %}
+            <li class="d-flex gap-2">
+              <i class="bi bi-check-circle-fill text-success"></i>
+              <span>{{ item }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </article>
+
+      <article class="glass-panel p-4 p-lg-5">
+        <h2 class="h5 mb-3">Recursos</h2>
+        <div class="d-flex flex-column gap-2">
+          {% for item in module.resources %}
+            <a href="{{ item.url }}" class="resource-link" {% if item.url starts with 'http' %}target="_blank" rel="noopener noreferrer"{% endif %}>
+              <i class="bi bi-link-45deg"></i> {{ item.label }}
+            </a>
+          {% endfor %}
+          <a href="{{ legacyPath }}" class="resource-link">
+            <i class="bi bi-journal-text"></i> Abrir nota legacy completa
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+{% endblock %}

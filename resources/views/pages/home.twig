@@ -1,0 +1,63 @@
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+  <section class="hero-card p-4 p-lg-5 mb-4 mb-lg-5" data-aos="fade-up" data-aos-duration="800">
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-8">
+        <p class="hero-eyebrow mb-2">Documentación técnica centralizada</p>
+        <h1 class="display-6 fw-bold mb-3">Landing Wiki modular para <span class="text-gradient">VERMQEN</span></h1>
+        <p class="lead text-secondary mb-4">
+          Esta interfaz es la base para documentar submódulos del proyecto de forma ordenada.
+          La nota actual de GitHub se conserva como contenido inicial y se integra dentro de esta wiki.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-primary btn-lg rounded-pill px-4" href="{{ modules[0].path }}">Abrir módulo inicial</a>
+          <a class="btn btn-outline-light rounded-pill px-4" href="{{ legacyPath }}">Ver nota legacy</a>
+        </div>
+        <div class="hero-metrics mt-4">
+          <span><strong>{{ modules|length }}</strong> módulos activos</span>
+          <span><strong>100%</strong> deployable en hosting compartido</span>
+          <span><strong>0 build</strong> toolchain frontend</span>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="glass-panel p-3 p-lg-4">
+          <p class="text-uppercase small text-secondary mb-2">Modo hosting compartido</p>
+          <p class="mb-2">Rutas limpias cuando hay rewrite y fallback sin rewrite con:</p>
+          <code class="code-chip">{{ queryRouteExample }}</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-3" data-aos="fade-up" data-aos-delay="100">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+      <div>
+        <h2 class="h4 mb-1">Módulos disponibles</h2>
+        <p class="text-secondary mb-0">Cada tarjeta representa una ventana de documentación.</p>
+      </div>
+      <div class="col-md-4 col-lg-3 p-0">
+        <input type="search" class="form-control bg-dark-subtle border-secondary-subtle text-light" placeholder="Filtrar módulo..." data-module-search>
+      </div>
+    </div>
+  </section>
+
+  <section class="row g-3 g-lg-4" data-module-list>
+    {% for module in modules %}
+      <div class="col-md-6 col-xl-4" data-module-card data-filter-text="{{ (module.title ~ ' ' ~ module.summary)|lower }}" data-aos="zoom-in-up" data-aos-delay="{{ loop.index * 60 }}">
+        <article class="module-card h-100 p-4">
+          <span class="badge rounded-pill text-bg-dark border border-secondary-subtle mb-3">{{ module.tag }}</span>
+          <h3 class="h5 mb-2">{{ module.title }}</h3>
+          <p class="text-secondary">{{ module.summary }}</p>
+          <a href="{{ module.path }}" class="stretched-link text-decoration-none fw-semibold">
+            Explorar módulo <i class="bi bi-arrow-right-short"></i>
+          </a>
+        </article>
+      </div>
+    {% endfor %}
+  </section>
+
+  <p class="text-secondary small mt-4 mb-0" data-no-results hidden>
+    No hay módulos que coincidan con la búsqueda.
+  </p>
+{% endblock %}
