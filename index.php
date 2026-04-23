@@ -13,7 +13,7 @@ require __DIR__ . '/vendor/autoload.php';
 if (PHP_SAPI === 'cli-server') {
     $requestPath = (string)parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     $staticFile = __DIR__ . $requestPath;
-    if (is_file($staticFile)) {
+    if (is_file($staticFile) && basename($requestPath) !== 'index.php') {
         return false;
     }
 }
