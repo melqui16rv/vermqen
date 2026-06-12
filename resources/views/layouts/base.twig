@@ -29,11 +29,31 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="wikiNav">
-            <ul class="navbar-nav ms-auto gap-lg-2">
+            <ul class="navbar-nav ms-auto gap-lg-1">
               {% for item in navigation %}
-                <li class="nav-item">
-                  <a class="nav-link rounded-pill px-3 {{ item.active ? 'active' : '' }}" href="{{ item.path }}">{{ item.label }}</a>
-                </li>
+                {% if item.type == 'dropdown' %}
+                  {# Fase 2: ítem de tipo dropdown (categoría de módulos) #}
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle rounded-pill px-3 {{ item.active ? 'active' : '' }}"
+                       href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      {{ item.label }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark border border-dark-subtle shadow">
+                      {% for sub in item.items %}
+                        <li>
+                          <a class="dropdown-item rounded-1 {{ sub.active ? 'active' : '' }}" href="{{ sub.path }}">
+                            {{ sub.label }}
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </li>
+                {% else %}
+                  {# Ítem simple (Inicio) #}
+                  <li class="nav-item">
+                    <a class="nav-link rounded-pill px-3 {{ item.active ? 'active' : '' }}" href="{{ item.path }}">{{ item.label }}</a>
+                  </li>
+                {% endif %}
               {% endfor %}
             </ul>
           </div>
@@ -50,7 +70,7 @@
     <footer class="border-top border-dark-subtle py-4">
       <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
         <span>VERMQEN · Wiki colaborativa del proyecto</span>
-        <span>Stack: Slim + Twig + Bootstrap + Alpine</span>
+        <span>Stack: Slim 4 · Twig · Bootstrap 5 · Alpine.js</span>
       </div>
     </footer>
   </div>

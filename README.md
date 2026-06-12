@@ -1,77 +1,170 @@
-# VERMQEN Wiki Landing
+# VERMQEN Wiki
 
-Wiki modular para documentar el proyecto VERMQEN con una arquitectura mantenible en hosting compartido.
+Wiki modular para documentar el proyecto VERMQEN. Cada módulo del sistema tiene su propia tarjeta y manual organizado por categorías.
 
 ## Stack
 
-- PHP 8.2+
-- Slim 4
-- Twig
-- Bootstrap 5 + Bootstrap Icons
-- Alpine.js
+| Capa | Tecnología |
+|---|---|
+| Lenguaje | PHP 8.2+ |
+| Framework HTTP | Slim 4 |
+| Templates | Twig 3 |
+| CSS | Bootstrap 5.3 + Bootstrap Icons |
+| JS reactivo | Alpine.js 3 |
+| Animaciones | AOS |
 
-## Estructura
+---
 
-```text
-app/
-  Content/
-  Controllers/
-  Routes/
-assets/
-  css/
-  js/
-content/
-resources/views/
-index.php
+## Estructura del proyecto
+
+```
+vermqen/
+│
+├── index.php                        ← Punto de entrada (bootstrap de Slim + Twig)
+├── composer.json                    ← Dependencias (vendor-dir: assets/vendor)
+├── .htaccess                        ← URL rewrite para Apache
+│
+├── app/                             ← Lógica PHP (PSR-4: App\)
+│   ├── Content/
+│   │   └── ContentRepository.php   ← Carga y expone los módulos
+│   ├── Controllers/
+│   │   └── PageController.php      ← Maneja las rutas home y módulo
+│   └── Routes/
+│       └── web.php                  ← Registro de rutas en Slim
+│
+├── content/                         ← DATOS de los módulos (PHP arrays)
+│   ├── wiki-modules.php             ← Cargador automático (glob)
+│   └── modules/
+│       ├── devops/                  ← Categoría: DevOps & Entorno
+│       │   ├── manejo-git.php
+│       │   ├── ejecucion-servidor.php
+│       │   └── ejecucion-migraciones.php
+│       ├── sistema/                 ← Categoría: Módulos del Sistema
+│       │   ├── ciudad-verde.php
+│       │   ├── gestor-curricular.php
+│       │   ├── ingreso-salida.php
+│       │   ├── presupuesto.php
+│       │   └── control-portatiles.php
+│       └── microservicios/          ← Categoría: Microservicios
+│           └── almacen.php
+│
+├── resources/
+│   └── views/
+│       ├── layouts/
+│       │   └── base.twig            ← Layout base (header, nav dropdowns, footer)
+│       ├── pages/
+│       │   ├── home.twig            ← Página principal con tarjetas por categoría
+│       │   ├── module.twig          ← Fallback (compatibilidad)
+│       │   └── not-found.twig       ← Página 404
+│       └── modules/                 ← Templates por tipo de módulo
+│           ├── manual.twig          ← Módulos tipo paso a paso (DevOps)
+│           └── reference.twig       ← Módulos tipo referencia (Sistema)
+│
+└── assets/
+    ├── css/
+    │   └── app.css                  ← Estilos personalizados
+    ├── js/
+    │   └── app.js                   ← Filtro de búsqueda + AOS + tilt
+    └── vendor/                      ← Dependencias Composer
 ```
 
-## Ver la landing en local (antes de desplegar)
+---
 
-1. Instala dependencias:
-   - `composer install`
-2. Levanta servidor local:
-   - `composer serve`
-3. Abre en navegador:
-   - `http://localhost:8080/` (landing principal)
-   - `http://localhost:8080/flujo-github` (módulo inicial)
-   - `http://localhost:8080/index.php?route=flujo-github` (fallback sin rewrite)
+## Flujo de una tarjeta (de dato a HTML)
 
-## Cómo desplegar (hosting compartido)
-
-1. Subir el repositorio al hosting.
-2. Ejecutar `composer install --no-dev --optimize-autoloader`.
-3. Asegurar que Apache tenga `mod_rewrite` activo (se usa `.htaccess`).
-4. Abrir el sitio.
-
-Si el hosting no soporta rewrite, usa el fallback:
-
-```text
-/index.php?route=flujo-github
+```
+content/modules/{categoria}/modulo.php   ← PHP array con título, resumen, features...
+        │  (glob automático)
+        ▼
+content/wiki-modules.php                 ← Cargador: une todos los módulos en un array
+        │  (ContentRepository::allModules)
+        ▼
+app/Content/ContentRepository.php        ← Lee el array y lo expone
+        │  (PageController::home)
+        ▼
+app/Controllers/PageController.php       ← Agrupa por categoría, construye rutas
+        │  (Twig::render 'pages/home.twig')
+        ▼
+resources/views/pages/home.twig          ← Loop: genera <article class="module-card">
+        │  (extends layouts/base.twig)
+        ▼
+resources/views/layouts/base.twig        ← Nav con dropdowns + Bootstrap + app.css
+        │
+        ▼
+🌐 Navegador recibe el HTML final
 ```
 
-## Cómo agregar una nueva “ventana” de documentación
+---
 
-1. Abre `content/wiki-modules.php`.
-2. Agrega una nueva entrada con slug único:
-   - título (`title`)
-   - resumen (`summary`)
-   - introducción (`intro`)
-   - pilares (`pillars`)
-   - flujo (`workflow`)
-   - checklist (`checklist`)
-   - recursos (`resources`)
-3. Guarda cambios y abre la ruta `/{slug}`.
-4. La navegación y tarjetas de inicio se actualizan automáticamente.
+## Cómo agregar un módulo nuevo
 
-## Aporte documental inicial integrado
+1. Crea un archivo PHP en `content/modules/{categoria}/mi-modulo.php`
+2. Retorna un array con los campos del módulo:
 
-- El archivo `flujo-github-vermqen.html` se conserva como aporte documental original.
-- Está integrado dentro del módulo `flujo-github` como un bloque embebido (iframe).
-- No es la vista principal; funciona como una fuente documental entre muchos aportes futuros.
+```php
+<?php
+return [
+    'category' => 'sistema',             // devops | sistema | microservicios
+    'template' => 'modules/manual.twig', // manual.twig | reference.twig
+    'nav'      => 'Mi Módulo',           // Texto en el navbar
+    'title'    => 'Nombre completo',
+    'tag'      => 'Sistema',
+    'summary'  => 'Descripción breve para la tarjeta del home.',
+    'intro'    => 'Descripción larga para el hero de la página del módulo.',
+    // Campos adicionales según el template elegido...
+];
+```
 
-## Nota importante de seguridad operativa
+3. ✅ Listo — aparece automáticamente en el home, en el navbar y tiene su URL `/{slug}`.
 
-Este repositorio **solo** documenta y construye la wiki.  
-No se debe tocar ni ejecutar comandos sobre el proyecto principal:
+### Campos para `manual.twig` (DevOps, paso a paso)
 
-`/Users/melquiromero/Documents/GitHub/vermqen-laravel/`
+```php
+'pillars'  => [['icon' => 'bi-gear', 'title' => '...', 'text' => '...']],
+'workflow' => [['step' => '1. ...', 'detail' => '...', 'command' => '...']],
+'checklist'=> ['Ítem 1', 'Ítem 2'],
+'resources'=> [['label' => '...', 'url' => 'https://...']],
+```
+
+### Campos para `reference.twig` (Módulos del sistema)
+
+```php
+'features'        => [['icon' => 'bi-box', 'title' => '...', 'text' => '...']],
+'related_modules' => [['label' => '...', 'slug' => '...', 'description' => '...']],
+'resources'       => [['label' => '...', 'url' => 'https://...']],
+```
+
+---
+
+## Levantar en local
+
+```bash
+# El vendor ya está en assets/vendor/ — no hace falta composer install
+php -S localhost:8080 index.php
+```
+
+Abrir: `http://localhost:8080/`
+
+Fallback sin rewrite (hosting compartido):
+```
+http://localhost:8080/index.php?route=manejo-git
+```
+
+---
+
+## Desplegar en hosting compartido (Apache)
+
+1. Subir el repositorio completo.
+2. Asegurar que Apache tiene `mod_rewrite` activo (se usa `.htaccess`).
+3. Abrir el sitio — el `vendor/` ya está incluido en `assets/vendor/`.
+
+---
+
+## Nota de seguridad operativa
+
+Este repositorio **solo** documenta el proyecto.  
+No ejecutar comandos sobre el sistema principal en producción:
+
+```
+vermqen-laravel/
+```

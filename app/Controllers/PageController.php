@@ -11,6 +11,17 @@ use Slim\Views\Twig;
 
 final class PageController
 {
+    /**
+     * Labels de categorías en el mismo orden que content/wiki-modules.php.
+     *
+     * @var array<string, string>
+     */
+    private const CATEGORY_LABELS = [
+        'devops'         => 'DevOps & Entorno',
+        'sistema'        => 'Módulos del Sistema',
+        'microservicios' => 'Microservicios',
+    ];
+
     public function __construct(
         private readonly Twig $twig,
         private readonly ContentRepository $contentRepository,
@@ -19,27 +30,43 @@ final class PageController
 
     public function home(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $basePath = $this->detectBasePath($request);
+        $basePath  = $this->detectBasePath($request);
         $queryMode = $this->useQueryRouting($request);
-        $modules = [];
+
+        $modules    = [];
+        $categories = [];
+
         foreach ($this->contentRepository->allModules() as $slug => $module) {
-            $modules[] = [
-                'slug' => $slug,
-                'title' => $module['title'] ?? $slug,
+            $moduleData = [
+                'slug'    => $slug,
+                'title'   => $module['title'] ?? $slug,
                 'summary' => $module['summary'] ?? '',
-                'tag' => $module['tag'] ?? 'Documentación',
-                'path' => $this->routePath($basePath, '/' . $slug, $queryMode),
+                'tag'     => $module['tag'] ?? 'Documentación',
+                'path'    => $this->routePath($basePath, '/' . $slug, $queryMode),
             ];
+
+            $modules[] = $moduleData;
+
+            $catKey = (string)($module['category'] ?? 'general');
+            if (!isset($categories[$catKey])) {
+                $categories[$catKey] = [
+                    'key'     => $catKey,
+                    'label'   => $this->categoryLabel($catKey),
+                    'modules' => [],
+                ];
+            }
+            $categories[$catKey]['modules'][] = $moduleData;
         }
 
         return $this->twig->render($response, 'pages/home.twig', [
-            'pageTitle' => 'Wiki del proyecto',
-            'currentSlug' => null,
-            'navigation' => $this->buildNavigation($basePath, null, $queryMode),
-            'modules' => $modules,
-            'legacyPath' => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
+            'pageTitle'         => 'Wiki del proyecto',
+            'currentSlug'       => null,
+            'navigation'        => $this->buildNavigation($basePath, null, $queryMode),
+            'modules'           => $modules,
+            'categories'        => array_values($categories),
+            'legacyPath'        => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
             'queryRouteExample' => $this->routePath($basePath, '/flujo-github', true),
-            'assetBase' => $this->assetBase($basePath),
+            'assetBase'         => $this->assetBase($basePath),
         ]);
     }
 
@@ -48,57 +75,96 @@ final class PageController
      */
     public function module(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $slug = strtolower((string)($args['slug'] ?? ''));
-        $basePath = $this->detectBasePath($request);
+        $slug      = strtolower((string)($args['slug'] ?? ''));
+        $basePath  = $this->detectBasePath($request);
         $queryMode = $this->useQueryRouting($request);
-        $module = $this->contentRepository->findModule($slug);
+        $module    = $this->contentRepository->findModule($slug);
 
         if ($module === null) {
             return $this->twig->render($response->withStatus(404), 'pages/not-found.twig', [
-                'pageTitle' => 'Página no encontrada',
-                'navigation' => $this->buildNavigation($basePath, null, $queryMode),
+                'pageTitle'    => 'Página no encontrada',
+                'navigation'   => $this->buildNavigation($basePath, null, $queryMode),
                 'requestedSlug' => $slug,
-                'homePath' => $this->routePath($basePath, '/', $queryMode),
-                'assetBase' => $this->assetBase($basePath),
+                'homePath'     => $this->routePath($basePath, '/', $queryMode),
+                'assetBase'    => $this->assetBase($basePath),
             ]);
         }
 
-        $module['resources'] = $this->normalizeResourceUrls($module['resources'] ?? [], $basePath);
+        $module['resources']    = $this->normalizeResourceUrls($module['resources'] ?? [], $basePath);
         $module['contribution'] = $this->normalizeContribution($module['contribution'] ?? null, $basePath);
 
-        return $this->twig->render($response, 'pages/module.twig', [
-            'pageTitle' => $module['title'] ?? 'Módulo',
+        // Fase 3: cada módulo elige su propio template. Fallback al clásico.
+        $template = (string)($module['template'] ?? 'pages/module.twig');
+
+        return $this->twig->render($response, $template, [
+            'pageTitle'   => $module['title'] ?? 'Módulo',
             'currentSlug' => $slug,
-            'navigation' => $this->buildNavigation($basePath, $slug, $queryMode),
-            'module' => $module,
-            'homePath' => $this->routePath($basePath, '/', $queryMode),
-            'legacyPath' => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
-            'assetBase' => $this->assetBase($basePath),
+            'navigation'  => $this->buildNavigation($basePath, $slug, $queryMode),
+            'module'      => $module,
+            'homePath'    => $this->routePath($basePath, '/', $queryMode),
+            'legacyPath'  => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
+            'assetBase'   => $this->assetBase($basePath),
         ]);
     }
 
+    // ─── Navigation ──────────────────────────────────────────────────────────
+
     /**
+     * Fase 2: navegación agrupada por categoría con dropdowns.
+     *
+     * Cada ítem puede ser de tipo 'link' (enlace simple) o 'dropdown'
+     * (grupo colapsable con sub-ítems). base.twig renderiza ambos.
+     *
      * @return array<int, array<string, mixed>>
      */
     private function buildNavigation(string $basePath, ?string $currentSlug, bool $queryMode): array
     {
         $navigation = [
             [
-                'label' => 'Inicio',
-                'path' => $this->routePath($basePath, '/', $queryMode),
+                'type'   => 'link',
+                'label'  => 'Inicio',
+                'path'   => $this->routePath($basePath, '/', $queryMode),
                 'active' => $currentSlug === null,
             ],
         ];
 
+        // Agrupar módulos por categoría (el orden viene del cargador glob).
+        $grouped = [];
         foreach ($this->contentRepository->allModules() as $slug => $module) {
-            $navigation[] = [
-                'label' => $module['nav'] ?? $module['title'] ?? $slug,
-                'path' => $this->routePath($basePath, '/' . $slug, $queryMode),
+            $catKey = (string)($module['category'] ?? 'general');
+            if (!isset($grouped[$catKey])) {
+                $grouped[$catKey] = [];
+            }
+            $grouped[$catKey][] = [
+                'label'  => (string)($module['nav'] ?? $module['title'] ?? $slug),
+                'path'   => $this->routePath($basePath, '/' . $slug, $queryMode),
                 'active' => $currentSlug === $slug,
             ];
         }
 
+        foreach ($grouped as $catKey => $items) {
+            $isActive = (bool)array_reduce(
+                $items,
+                static fn (bool $carry, array $item): bool => $carry || $item['active'],
+                false,
+            );
+
+            $navigation[] = [
+                'type'   => 'dropdown',
+                'label'  => $this->categoryLabel($catKey),
+                'active' => $isActive,
+                'items'  => $items,
+            ];
+        }
+
         return $navigation;
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────────────────────
+
+    private function categoryLabel(string $catKey): string
+    {
+        return self::CATEGORY_LABELS[$catKey] ?? ucfirst($catKey);
     }
 
     private function withBasePath(string $basePath, string $path): string
@@ -153,14 +219,14 @@ final class PageController
     private function detectBasePath(ServerRequestInterface $request): string
     {
         $serverParams = $request->getServerParams();
-        $scriptName = str_replace('\\', '/', (string)($serverParams['SCRIPT_NAME'] ?? ''));
-        $basePath = rtrim(str_replace('/index.php', '', $scriptName), '/');
+        $scriptName   = str_replace('\\', '/', (string)($serverParams['SCRIPT_NAME'] ?? ''));
+        $basePath     = rtrim(str_replace('/index.php', '', $scriptName), '/');
         return $basePath === '/' ? '' : $basePath;
     }
 
     private function useQueryRouting(ServerRequestInterface $request): bool
     {
-        $serverParams = $request->getServerParams();
+        $serverParams      = $request->getServerParams();
         $originalRequestUri = (string)($serverParams['ORIGINAL_REQUEST_URI'] ?? '');
         if ($originalRequestUri !== '' && str_contains($originalRequestUri, 'index.php?route=')) {
             return true;
@@ -182,7 +248,7 @@ final class PageController
         }
 
         $entryPoint = $this->withBasePath($basePath, '/index.php');
-        $route = ltrim($path, '/');
+        $route      = ltrim($path, '/');
         if ($route === '') {
             return $entryPoint;
         }

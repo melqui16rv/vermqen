@@ -8,7 +8,21 @@ use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/assets/vendor/autoload.php';
+
+// El vendor/ fue instalado desde assets/, por lo que el mapa PSR-4 generado por
+// Composer apunta App\ a assets/app/ en lugar de app/ (raíz del proyecto).
+// Este autoloader de prepend lo corrige sin modificar archivos auto-generados.
+spl_autoload_register(static function (string $class): void {
+    if (!str_starts_with($class, 'App\\')) {
+        return;
+    }
+    $relative = str_replace(['App\\', '\\'], ['', \DIRECTORY_SEPARATOR], $class);
+    $file = __DIR__ . \DIRECTORY_SEPARATOR . 'app' . \DIRECTORY_SEPARATOR . $relative . '.php';
+    if (is_file($file)) {
+        require_once $file;
+    }
+}, true, true); // prepend=true → corre antes que el loader de Composer
 
 if (PHP_SAPI === 'cli-server') {
     $requestPath = (string)parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);

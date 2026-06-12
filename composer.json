@@ -14,6 +14,9 @@
             "App\\": "app/"
         }
     },
+    "config": {
+        "vendor-dir": "assets/vendor"
+    },
     "scripts": {
         "serve": "php -S localhost:8080 index.php"
     },
