@@ -25,6 +25,7 @@ return [
         [
             'icon'  => 'bi-qr-code-scan',
             'title' => 'Trazabilidad completa',
+            
             'text'  => 'Historial de movimientos por equipo: quién lo usó, cuándo y en qué estado fue devuelto.',
         ],
     ],
