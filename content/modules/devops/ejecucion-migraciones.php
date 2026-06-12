@@ -54,6 +54,79 @@ return [
             'detail'  => 'Borrar y recrear todo el esquema desde cero. NUNCA usar en producción.',
             'command' => 'php artisan migrate:fresh --seed',
         ],
+        [
+            'step'    => '6. Migración de un módulo específico',
+            'detail'  => 'Como las migraciones están organizadas en carpetas por módulo, para migrar uno desde cero debes usar el flag --path indicando la ruta de la carpeta del módulo.',
+            'command' => 'php artisan migrate --path=database/migrations/NombreModulo',
+        ],
+        [
+            'step'    => '7. Reset y migración de un módulo (Refresh)',
+            'detail'  => 'Para revertir (rollback) y volver a ejecutar desde cero únicamente las migraciones de un módulo en específico, usa el comando migrate:refresh con el flag --path.',
+            'command' => 'php artisan migrate:refresh --path=database/migrations/NombreModulo',
+        ],
+    ],
+    'refresh_command' => [
+        'title'       => 'Ejecución de migrate:fresh (Reset Completo de la base de datos)',
+        'description' => 'El comando `migrate:fresh` elimina **todas las tablas** de la base de datos y recrea el esquema desde cero aplicando todas las migraciones disponibles. Es equivalente a ejecutar `php artisan migrate:drop` seguido de `php artisan migrate`.',
+        'steps'       => [
+            [
+                'icon'        => 'bi-backspace-fill',
+                'label'       => '1. ¿Qué hace exactamente?',
+                'path'        => 'Terminal',
+                'description' => 'Elimina todo el esquema (tablas, índices, vistas) y ejecuta nuevamente el registro de migraciones desde cero. Si utilizas seeders, también se ejecutarán.',
+                'example'     => "php artisan migrate:fresh --seed",
+            ],
+            [
+                'icon'        => 'bi-exclamation-triangle-fill',
+                'label'       => '2. ADVERTENCIA DE SEGURIDAD',
+                'path'        => '',
+                'description' => '**NO USAR EN PRODUCCIÓN.** Este comando borra datos permanentemente. Solo es seguro en entornos de desarrollo o pruebas donde no hay información crítica.',
+            ],
+            [
+                'icon'        => 'bi-file-earmark-text',
+                'label'       => '3. Script Recomendado para Desarrollo',
+                'path'        => 'Terminal',
+                'description' => 'Para limpiar la base de datos local y volver a un estado inicial de forma rápida y segura, usa el siguiente script que incluye el seeder para dejar usuarios y roles funcionales.',
+                'example'     => "php artisan migrate:fresh --seed",
+            ],
+        ],
+        'workflow'       => [
+        [
+            'step'    => '1. Verificar estado',
+            'detail'  => 'Revisar qué migraciones están pendientes antes de aplicar cualquier cambio.',
+            'command' => 'php artisan migrate:status',
+        ],
+        [
+            'step'    => '2. Ejecutar migraciones pendientes',
+            'detail'  => 'Aplicar todas las migraciones que aún no han sido ejecutadas.',
+            'command' => 'php artisan migrate',
+        ],
+        [
+            'step'    => '3. Migrar con datos semilla',
+            'detail'  => 'Ejecutar migraciones y poblar la BD con datos iniciales (solo en desarrollo).',
+            'command' => 'php artisan migrate --seed',
+        ],
+        [
+            'step'    => '4. Rollback del último lote',
+            'detail'  => 'Revertir el último lote de migraciones aplicadas si algo salió mal.',
+            'command' => 'php artisan migrate:rollback',
+        ],
+        [
+            'step'    => '5. Reset completo (solo desarrollo)',
+            'detail'  => 'Borrar y recrear todo el esquema desde cero. NUNCA usar en producción.',
+            'command' => 'php artisan migrate:fresh --seed',
+        ],
+        [
+            'step'    => '6. Migración de un módulo específico',
+            'detail'  => 'Como las migraciones están organizadas en carpetas por módulo, para migrar uno desde cero debes usar el flag --path indicando la ruta de la carpeta del módulo.',
+            'command' => 'php artisan migrate --path=database/migrations/NombreModulo',
+        ],
+        [
+            'step'    => '7. Reset y migración de un módulo (Refresh)',
+            'detail'  => 'Para revertir (rollback) y volver a ejecutar desde cero únicamente las migraciones de un módulo en específico, usa el comando migrate:refresh con el flag --path.',
+            'command' => 'php artisan migrate:refresh --path=database/migrations/NombreModulo',
+        ],
+    ],
     ],
     'checklist'      => [
         'Se realizó un respaldo de la base de datos antes de aplicar en producción.',
