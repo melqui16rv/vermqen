@@ -16,21 +16,65 @@
     <p class="lead text-secondary mb-0">{{ module.intro }}</p>
   </section>
 
+  <style>
+    .feature-card {
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      cursor: default;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2) !important;
+    }
+    .feature-icon-wrapper {
+      transition: transform 0.3s ease;
+    }
+    .feature-card:hover .feature-icon-wrapper {
+      transform: scale(1.15) rotate(5deg);
+    }
+  </style>
+
   {# ── Capacidades / Features ───────────────────────────────────────── #}
   {% if module.features %}
     <section class="row g-3 g-lg-4 mb-4">
+      {% set colors = ['primary', 'success', 'warning', 'info', 'danger'] %}
       {% for feature in module.features %}
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 70 }}">
-          <article class="module-card h-100 p-4">
-            <div class="icon-pill mb-3"><i class="bi {{ feature.icon }}"></i></div>
-            <h2 class="h6">{{ feature.title }}</h2>
-            <p class="text-secondary mb-0">{{ feature.text }}</p>
+        {% set color = cycle(colors, loop.index0) %}
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 70 }}">
+          <article class="module-card feature-card h-100 p-4 border-start border-4 border-{{ color }}">
+            <div class="icon-pill feature-icon-wrapper mb-3 text-{{ color }} bg-{{ color }} bg-opacity-10 border border-{{ color }}-subtle">
+              <i class="bi {{ feature.icon }}"></i>
+            </div>
+            <h2 class="h6 fw-bold text-light">{{ feature.title }}</h2>
+            <p class="text-secondary mb-0 small">{{ feature.text }}</p>
           </article>
         </div>
       {% endfor %}
     </section>
   {% endif %}
 
+  {# ── Arquitectura y Desarrollo ──────────────────────────────────────── #}
+  {% if module.architecture_docs %}
+    <section class="mb-5" data-aos="fade-up" data-aos-delay="100">
+      <article class="glass-panel p-4 p-lg-5">
+        <h2 class="h4 mb-4 fw-bold">
+          <i class="bi bi-braces me-2 text-info"></i>Arquitectura y Desarrollo
+        </h2>
+        <div class="d-flex flex-column gap-4">
+          {% for doc in module.architecture_docs %}
+            <div class="architecture-block">
+              <h3 class="h6 fw-bold mb-2 text-primary">{{ doc.title }}</h3>
+              <p class="text-secondary mb-3">{{ doc.description }}</p>
+              {% if doc.code %}
+                <pre class="mb-0 p-3 rounded-3 border border-secondary-subtle small"
+                     style="background:rgba(0,0,0,.35);color:#e2e8f0;overflow-x:auto;white-space:pre;line-height:1.5;"><code>{{ doc.code }}</code></pre>
+              {% endif %}
+            </div>
+            {% if not loop.last %}<hr class="border-secondary opacity-25">{% endif %}
+          {% endfor %}
+        </div>
+      </article>
+    </section>
+  {% endif %}
   {# ── Módulos relacionados + Recursos ──────────────────────────────── #}
   <section class="row g-4" data-aos="fade-up" data-aos-delay="120">
 

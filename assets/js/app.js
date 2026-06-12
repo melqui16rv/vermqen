@@ -22,7 +22,10 @@
     return;
   }
 
-  const normalize = (value) => value.toLowerCase().trim();
+  const normalize = (value) => {
+    if (!value) return '';
+    return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  };
 
   const applyFilter = () => {
     const query        = normalize(searchInput.value);

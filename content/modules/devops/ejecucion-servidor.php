@@ -68,13 +68,13 @@ return [
         [
             'key'         => 'DB_PORT',
             'value'       => '3306',
-            'description' => 'Puerto de conexión (3306 para MySQL, 5432 para PostgreSQL).',
+            'description' => 'Puerto de conexión. Si tu gestor de bases de datos corre en un puerto diferente (ej. 3307), debes editar este valor.',
             'required'    => true,
         ],
         [
             'key'         => 'DB_DATABASE',
             'value'       => 'vermqen_db',
-            'description' => 'Nombre exacto de la base de datos en el servidor.',
+            'description' => 'IMPORTANTE: Primero debes crear la base de datos vacía en el administrador de base de datos que utilices (phpMyAdmin, DBeaver, etc.) y luego poner su nombre exacto aquí.',
             'required'    => true,
         ],
         [
@@ -190,6 +190,13 @@ return [
                 'description' => 'Registrar las rutas del módulo agrupadas bajo su prefijo y name, documentadas con un comentario separador que lleva el nombre del módulo.',
                 'example'     => "// ── NombreModulo ──────────────────────────────────\nuse App\\Http\\Controllers\\NombreModulo\\NombreModuloController;\n\nRoute::prefix('nombre-modulo')\n     ->name('nombre-modulo.')\n     ->middleware(['auth'])\n     ->group(function () {\n         Route::get('/',        [NombreModuloController::class, 'index' ])->name('index');\n         Route::get('/crear',   [NombreModuloController::class, 'create'])->name('create');\n         Route::post('/',       [NombreModuloController::class, 'store' ])->name('store');\n         Route::get('/{id}',    [NombreModuloController::class, 'show'  ])->name('show');\n         Route::put('/{id}',    [NombreModuloController::class, 'update'])->name('update');\n         Route::delete('/{id}', [NombreModuloController::class, 'destroy'])->name('destroy');\n     });",
             ],
+            [
+                'icon'        => 'bi-shield-lock',
+                'label'       => '6. Permisos y Accesos (Visualización local)',
+                'path'        => 'Base de datos (user_app_access)',
+                'description' => 'Para poder visualizar y testear el nuevo módulo en tu entorno local, asegúrate de que tu usuario tenga rol de Administrador. Si el sistema restringe vistas por módulo y no logras verlo, debes otorgarte permisos insertando el registro correspondiente que vincule tu usuario al módulo en la tabla `user_app_access`.',
+                'is_alert'    => true,
+            ],
         ],
     ],
     'email_setup'    => [
@@ -234,6 +241,47 @@ return [
                 'label'       => '3. Cache Busting y Carga Automática',
                 'path'        => 'public/build/assets/',
                 'description' => 'Al compilar, Vite añade un hash único a los archivos (ej. `app-CAHtgUM7.css`). Esto se llama "Cache Busting" e impide que el navegador use un caché viejo si hay cambios. Laravel lee el archivo `manifest.json` y la directiva `@vite()` inyecta automáticamente el archivo con el hash correcto en tu Blade.',
+            ],
+        ],
+    ],
+    'cache_management' => [
+        'title'       => 'Gestión de Caché en Desarrollo Modular',
+        'description' => 'En el desarrollo modular, limpiar la caché es crucial. Evita que configuraciones, rutas o vistas antiguas interfieran al integrar un nuevo módulo, asegurando que el framework compile y ejecute la versión más reciente del código en todos los microservicios.',
+        'steps'       => [
+            [
+                'icon'        => 'bi-gear-fill',
+                'label'       => 'Caché de Configuración',
+                'path'        => 'Terminal',
+                'description' => 'Reconstruye la caché de configuración. Vital cuando añades variables al `.env` o creas nuevos archivos en `config/` específicos para un módulo. Sin esto, el sistema seguirá usando los credenciales o valores cacheados antiguos.',
+                'example'     => "php artisan config:clear\nphp artisan config:cache",
+            ],
+            [
+                'icon'        => 'bi-signpost-split',
+                'label'       => 'Caché de Rutas',
+                'path'        => 'Terminal',
+                'description' => 'Limpia la caché de enrutamiento. Al encapsular la lógica en módulos independientes, cada vez que creas o modificas las rutas de un microservicio, debes ejecutar este comando para que Laravel descubra y registre los nuevos endpoints.',
+                'example'     => "php artisan route:clear\nphp artisan route:cache",
+            ],
+            [
+                'icon'        => 'bi-window',
+                'label'       => 'Caché de Vistas',
+                'path'        => 'Terminal',
+                'description' => 'Laravel precompila las vistas Blade por rendimiento. Si desarrollas nuevas plantillas o componentes UI para un módulo y no se reflejan al recargar la página, este comando purga la versión antigua y fuerza a re-compilar el HTML.',
+                'example'     => "php artisan view:clear\nphp artisan view:cache",
+            ],
+            [
+                'icon'        => 'bi-database-dash',
+                'label'       => 'Caché de Aplicación',
+                'path'        => 'Terminal',
+                'description' => 'Purga la caché genérica temporal (Redis, Memcached o File). Esencial si diferentes módulos interactúan y dejan "basura" o estados temporales; esto te permite probar las interacciones desde cero.',
+                'example'     => "php artisan cache:clear",
+            ],
+            [
+                'icon'        => 'bi-lightning-charge',
+                'label'       => 'Caché de Opcache / Optimización',
+                'path'        => 'Terminal',
+                'description' => 'Limpia clases compiladas y optimizaciones a nivel general. Actúa como el "reinicio fuerte". Cuando integras microservicios y sufres de errores fantasma como "Class Not Found", este comando purga todas las cachés base de una sola pasada.',
+                'example'     => "php artisan optimize:clear\nphp artisan optimize",
             ],
         ],
     ],
