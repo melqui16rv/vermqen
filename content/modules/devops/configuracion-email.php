@@ -19,7 +19,7 @@ return [
                 'icon'        => 'bi-envelope-at',
                 'label'       => '1. Configuración de correo con Gmail en .env',
                 'path'        => '.env',
-                'description' => 'Para usar Gmail, ve a la "Gestión de tu cuenta de Google", activa la "Verificación en dos pasos" (si no la tienes activa) y crea una "Contraseña de aplicación". Copia la clave generada de 16 letras y colócala en MAIL_PASSWORD.',
+                'description' => 'Para usar Gmail, ve a la "Gestión de tu cuenta de Google", activa la "Verificación en dos pasos" (si no la tienes activa) y crea una "Contraseña de aplicación". Copia la clave generada de 16 letras y colócala en MAIL_PASSWORD.<br><div class="row g-3 mt-2"><div class="col-md-6"><img src="/assets/img/pass-app-1.png" class="img-fluid rounded border border-secondary-subtle" alt="Generación de contraseña"></div><div class="col-md-6"><img src="/assets/img/pass-app-2.png" class="img-fluid rounded border border-secondary-subtle" alt="Clave de 16 caracteres"></div></div>',
                 'example'     => "MAIL_MAILER=smtp\nMAIL_HOST=smtp.gmail.com\nMAIL_PORT=587\nMAIL_USERNAME=\"tu_correo@gmail.com\"\nMAIL_PASSWORD=\"xxxx xxxx xxxx xxxx\"\nMAIL_ENCRYPTION=tls\nMAIL_FROM_ADDRESS=\"tu_correo@gmail.com\"\nMAIL_FROM_NAME=\"\${APP_NAME}\"",
             ],
             [

@@ -53,7 +53,7 @@ return [
     'resources'       => [
         [
             'label' => 'Repositorio del proyecto',
-            'url'   => 'https://github.com/melqui16rv',
+            'url'   => 'https://github.com/melqui16rv/vermqen-laravel',
         ],
     ],
 ];

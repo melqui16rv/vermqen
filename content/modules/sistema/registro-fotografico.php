@@ -49,18 +49,6 @@ return [
         ]
     ],
     'developer_docs' => [
-        'routing_reference' => [
-            'prefix'     => 'ciudad-verde/registro-fotografico',
-            'group_name' => 'registro_fotografico',
-            'endpoints'  => [
-                ['method' => 'GET', 'uri' => '/', 'action' => 'index', 'route_name' => 'index'],
-                ['method' => 'GET', 'uri' => '/create', 'action' => 'create', 'route_name' => 'create'],
-                ['method' => 'POST', 'uri' => '/', 'action' => 'store', 'route_name' => 'store'],
-                ['method' => 'GET', 'uri' => '/descargar/todas', 'action' => 'downloadAll', 'route_name' => 'downloadAll'],
-                ['method' => 'POST', 'uri' => '/descargar/seleccionadas', 'action' => 'downloadSelected', 'route_name' => 'downloadSelected'],
-                ['method' => 'GET', 'uri' => '/api/validar-item/{item}', 'action' => 'validateItem', 'route_name' => 'api.validar_item'],
-            ]
-        ],
         'environment_setup' => [
             'requirements' => [
                 'Intervention Image v3', 

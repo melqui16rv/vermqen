@@ -295,7 +295,7 @@
               <code class="code-chip ms-auto text-warning">{{ step.path }}</code>
             </div>
             {# Descripción #}
-            <p class="text-secondary mb-2 small">{{ step.description }}</p>
+            <p class="text-secondary mb-2 small">{{ step.description|raw }}</p>
             {# Ejemplo de código #}
             {% if step.example %}
               <pre class="mb-0 p-3 rounded-2 border border-secondary-subtle small"
