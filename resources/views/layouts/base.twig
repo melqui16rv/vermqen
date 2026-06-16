@@ -32,7 +32,6 @@
             <ul class="navbar-nav ms-auto gap-lg-1">
               {% for item in navigation %}
                 {% if item.type == 'dropdown' %}
-                  {# Fase 2: ítem de tipo dropdown (categoría de módulos) #}
                   <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle rounded-pill px-3 {{ item.active ? 'active' : '' }}"
                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -49,12 +48,17 @@
                     </ul>
                   </li>
                 {% else %}
-                  {# Ítem simple (Inicio) #}
                   <li class="nav-item">
                     <a class="nav-link rounded-pill px-3 {{ item.active ? 'active' : '' }}" href="{{ item.path }}">{{ item.label }}</a>
                   </li>
                 {% endif %}
               {% endfor %}
+              
+              <li class="nav-item ms-lg-3">
+                <button onclick="toggleTheme()" class="nav-link rounded-pill px-3 btn btn-link" title="Alternar tema">
+                  <i class="bi bi-circle-half"></i>
+                </button>
+              </li>
             </ul>
           </div>
         </div>
