@@ -199,6 +199,58 @@ return [
             ],
         ],
     ],
+    'module_creation' => [
+        'title'       => 'Creación de Módulos desde Consola',
+        'description' => 'Pasos rápidos para generar toda la estructura base de un nuevo módulo utilizando los comandos de Artisan, siguiendo el patrón Modelo-Vista-Controlador (MVC).',
+        'steps'       => [
+            [
+                'icon'        => 'bi-database-add',
+                'label'       => '1. Generar Modelo y Migración',
+                'path'        => 'Terminal',
+                'description' => 'El flag `-m` le dice a Artisan que además del Modelo Eloquent, genere instantáneamente su archivo de migración en la carpeta database/migrations.',
+                'example'     => "php artisan make:model NombreModulo -m",
+            ],
+            [
+                'icon'        => 'bi-braces',
+                'label'       => '2. Generar Controlador con Recursos',
+                'path'        => 'Terminal',
+                'description' => 'El flag `-r` (resource) crea un controlador que ya incluye todos los métodos CRUD vacíos: index, create, store, show, edit, update, destroy.',
+                'example'     => "php artisan make:controller NombreModulo/NombreModuloController -r",
+            ],
+            [
+                'icon'        => 'bi-window-plus',
+                'label'       => '3. Crear Vistas y Rutas (Manual)',
+                'path'        => 'Editor',
+                'description' => 'Artisan no genera vistas automáticamente. Crea tu carpeta en `resources/views/nombre-modulo/` con tus vistas Blade/Twig, y registra el controlador generado en `routes/web.php` usando `Route::resource()` o definiendo las rutas manualmente.',
+                'example'     => "mkdir resources/views/nombre-modulo",
+            ],
+        ],
+    ],
+    'microservice_guide' => [
+        'title'       => 'Implementación de Microservicios',
+        'description' => 'Si el módulo que estás creando es un microservicio (como Almacén) diseñado para ser consumido por un módulo principal (como Ciudad Verde), el enfoque de implementación cambia ligeramente.',
+        'steps'       => [
+            [
+                'icon'        => 'bi-diagram-3',
+                'label'       => '1. Estructura Desacoplada',
+                'path'        => 'Controladores / Modelos',
+                'description' => 'El microservicio debe operar de forma independiente. Coloca sus controladores en `app/Http/Controllers/Microservicios/` para separarlos de los módulos de negocio principales.',
+            ],
+            [
+                'icon'        => 'bi-router',
+                'label'       => '2. Exposición de Rutas',
+                'path'        => 'routes/api.php o web.php',
+                'description' => 'Dependiendo de si el microservicio devuelve vistas o solo JSON, regístralo en el archivo de rutas correspondiente y bajo un prefijo único (ej. `microservicios/almacen`).',
+                'example'     => "Route::prefix('microservicios/nombre-micro')->group(function () {\n    // Rutas exclusivas del microservicio\n});",
+            ],
+            [
+                'icon'        => 'bi-plugin',
+                'label'       => '3. Integración con el Módulo Principal',
+                'path'        => 'Servicios',
+                'description' => 'El módulo principal no debe consultar directamente la base de datos del microservicio a menos que sea estrictamente necesario. Lo ideal es que interactúen a través de clases de Servicio internas o llamadas HTTP si están muy desacoplados.',
+            ],
+        ],
+    ],
     'email_setup'    => [
         'title'       => 'Configuración de Correos y Creación de Usuario Local',
         'description' => 'Para el envío de correos y confirmación de cuentas en local, puedes configurar el servicio SMTP de Gmail en el `.env`. Si prefieres evitar este paso y saltar la confirmación, puedes crear un usuario ya verificado directamente mediante consola interactiva (Tinker) sin crear archivos adicionales.',
