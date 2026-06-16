@@ -28,40 +28,45 @@
   };
 
   const applyFilter = () => {
-    const query        = normalize(searchInput.value);
-    let totalVisible   = 0;
+    const rawQuery = searchInput.value;
+    const queryText = normalize(rawQuery);
+    const queryWords = queryText.split(/\s+/).filter(w => w.length > 0);
+    let totalVisible = 0;
 
-    // Recorrer cada sección de categoría
     const sections = document.querySelectorAll('[data-category-section]');
 
     if (sections.length === 0) {
-      // Fallback: modo plano (sin categorías)
       document.querySelectorAll('[data-module-card]').forEach((card) => {
         const haystack = normalize(card.dataset.filterText || '');
-        const visible  = query === '' || haystack.includes(query);
-        card.hidden    = !visible;
+        const visible = queryWords.length === 0 || queryWords.every(word => haystack.includes(word));
+        card.classList.toggle('d-none', !visible);
         if (visible) totalVisible++;
       });
     } else {
       sections.forEach((section) => {
-        const cards         = section.querySelectorAll('[data-module-card]');
+        const cards = section.querySelectorAll('[data-module-card]');
         let visibleInSection = 0;
 
         cards.forEach((card) => {
           const haystack = normalize(card.dataset.filterText || '');
-          const visible  = query === '' || haystack.includes(query);
-          card.hidden    = !visible;
+          const visible = queryWords.length === 0 || queryWords.every(word => haystack.includes(word));
+          
+          card.classList.toggle('d-none', !visible);
+          
           if (visible) visibleInSection++;
         });
 
         // Ocultar la sección completa si no tiene coincidencias
-        section.hidden = visibleInSection === 0 && query !== '';
-        totalVisible  += visibleInSection;
+        const sectionVisible = visibleInSection > 0 || queryWords.length === 0;
+        section.classList.toggle('d-none', !sectionVisible);
+        totalVisible += visibleInSection;
       });
     }
 
     if (noResults) {
-      noResults.hidden = totalVisible !== 0 || query === '';
+      const showNoResults = totalVisible === 0 && queryWords.length > 0;
+      noResults.hidden = !showNoResults;
+      noResults.classList.toggle('d-none', !showNoResults);
     }
   };
 

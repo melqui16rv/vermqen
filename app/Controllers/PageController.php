@@ -37,12 +37,14 @@ final class PageController
         $categories = [];
 
         foreach ($this->contentRepository->allModules() as $slug => $module) {
+            $catKey = (string)($module['category'] ?? 'general');
+            
             $moduleData = [
                 'slug'    => $slug,
                 'title'   => $module['title'] ?? $slug,
                 'summary' => $module['summary'] ?? '',
                 'tag'     => $module['tag'] ?? 'Documentación',
-                'path'    => $this->routePath($basePath, '/' . $slug, $queryMode),
+                'path'    => $this->routePath($basePath, '/' . $catKey . '/' . $slug, $queryMode),
             ];
 
             $modules[] = $moduleData;
@@ -75,12 +77,13 @@ final class PageController
      */
     public function module(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $category  = strtolower((string)($args['category'] ?? ''));
         $slug      = strtolower((string)($args['slug'] ?? ''));
         $basePath  = $this->detectBasePath($request);
         $queryMode = $this->useQueryRouting($request);
         $module    = $this->contentRepository->findModule($slug);
 
-        if ($module === null) {
+        if ($module === null || (string)($module['category'] ?? 'general') !== $category) {
             return $this->twig->render($response->withStatus(404), 'pages/not-found.twig', [
                 'pageTitle'    => 'Página no encontrada',
                 'navigation'   => $this->buildNavigation($basePath, null, $queryMode),
@@ -137,7 +140,7 @@ final class PageController
             }
             $grouped[$catKey][] = [
                 'label'  => (string)($module['nav'] ?? $module['title'] ?? $slug),
-                'path'   => $this->routePath($basePath, '/' . $slug, $queryMode),
+                'path'   => $this->routePath($basePath, '/' . $catKey . '/' . $slug, $queryMode),
                 'active' => $currentSlug === $slug,
             ];
         }
