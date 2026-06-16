@@ -16,60 +16,7 @@
     <p class="lead text-secondary mb-0">{{ module.intro }}</p>
   </section>
 
-  <style>
-    .feature-card {
-      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-    .feature-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 100%);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      pointer-events: none;
-    }
-    .feature-card:hover::after,
-    .feature-card:focus-within::after {
-      opacity: 1;
-    }
-    .feature-card:hover,
-    .feature-card:focus-within {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.3) !important;
-    }
-    .feature-icon-wrapper {
-      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    .feature-card:hover .feature-icon-wrapper,
-    .feature-card:focus-within .feature-icon-wrapper {
-      transform: scale(1.15) rotate(8deg) translateY(-2px);
-    }
-    .feature-text-wrapper {
-      display: grid;
-      grid-template-rows: 0fr;
-      transition: grid-template-rows 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    .feature-card:hover .feature-text-wrapper,
-    .feature-card:focus-within .feature-text-wrapper {
-      grid-template-rows: 1fr;
-    }
-    .feature-text {
-      overflow: hidden;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    .feature-card:hover .feature-text,
-    .feature-card:focus-within .feature-text {
-      opacity: 1;
-      transform: translateY(0);
-      transition-delay: 0.15s;
-    }
-  </style>
+  <link rel="stylesheet" href="/assets/css/modules/reference.css">
 
   {# ── Capacidades / Features ───────────────────────────────────────── #}
   {% if module.features %}
@@ -115,6 +62,156 @@
           {% endfor %}
         </div>
       </article>
+    </section>
+  {% endif %}
+
+  {# ── Especificaciones Técnicas para Desarrolladores ──────────────── #}
+  {% if module.developer_docs %}
+    <section class="mb-5" data-aos="fade-up" data-aos-delay="100">
+      <h2 class="h4 mb-4 fw-bold">
+        <i class="bi bi-code-slash me-2 text-info"></i>Especificaciones Técnicas
+      </h2>
+      <div class="row g-4">
+      
+        {# UI Components #}
+        {% if module.developer_docs.ui_components %}
+        <div class="col-lg-6">
+          <article class="glass-panel p-4 h-100">
+            <h3 class="h5 mb-3"><i class="bi bi-window-sidebar me-2 text-primary"></i>Componentes de UI</h3>
+            <p class="text-secondary small mb-3">{{ module.developer_docs.ui_components.navbar_context }}</p>
+            {% if module.developer_docs.ui_components.sub_nav_tabs %}
+              <div class="d-flex flex-wrap gap-2">
+                {% for tab in module.developer_docs.ui_components.sub_nav_tabs %}
+                  <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">{{ tab }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </article>
+        </div>
+        {% endif %}
+
+        {# Search Filters #}
+        {% if module.developer_docs.search_filters %}
+        <div class="col-lg-6">
+          <article class="glass-panel p-4 h-100">
+            <h3 class="h5 mb-3"><i class="bi bi-funnel me-2 text-warning"></i>Filtros de Búsqueda</h3>
+            <div class="d-flex flex-column gap-3">
+              {% for key, filters in module.developer_docs.search_filters %}
+                <div class="workflow-step p-3">
+                  <p class="fw-semibold text-capitalize mb-2">{{ key|replace({'_': ' '}) }}</p>
+                  <ul class="list-unstyled mb-0 small text-secondary">
+                    {% if filters.input_principal %}<li><i class="bi bi-search me-2"></i>{{ filters.input_principal }}</li>{% endif %}
+                    {% if filters.input_busqueda %}<li><i class="bi bi-search me-2"></i>{{ filters.input_busqueda }}</li>{% endif %}
+                    {% if filters.select_filters %}
+                      <li><i class="bi bi-ui-radios me-2"></i>{{ filters.select_filters|join(', ') }}</li>
+                    {% endif %}
+                    {% if filters.select_seccion %}<li><i class="bi bi-layout-text-window me-2"></i>{{ filters.select_seccion }}</li>{% endif %}
+                    {% if filters.select_campos %}<li><i class="bi bi-ui-checks me-2"></i>{{ filters.select_campos }}</li>{% endif %}
+                  </ul>
+                </div>
+              {% endfor %}
+            </div>
+          </article>
+        </div>
+        {% endif %}
+
+        {# Audit System Logic #}
+        {% if module.developer_docs.audit_system_logic %}
+        <div class="col-12">
+          <article class="glass-panel p-4">
+            <h3 class="h5 mb-3"><i class="bi bi-shield-check me-2 text-success"></i>Lógica de Auditoría</h3>
+            <div class="row g-4">
+              <div class="col-md-6">
+                <p class="fw-semibold mb-2 small text-secondary">Entidades Evaluadas:</p>
+                <ul class="list-group list-group-flush bg-transparent">
+                  {% for key, eval in module.developer_docs.audit_system_logic.widgets_evaluated %}
+                    <li class="list-group-item bg-transparent text-light border-secondary-subtle px-0 py-2 small">
+                      <span class="text-info text-capitalize">{{ key|replace({'_': ' '}) }}:</span> <span class="text-secondary">{{ eval }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <div class="alert alert-success bg-success bg-opacity-10 border-success-subtle text-light small mb-0 h-100">
+                  <i class="bi bi-check-circle-fill me-2 text-success"></i>
+                  <strong>Estado de Éxito:</strong><br>
+                  {{ module.developer_docs.audit_system_logic.success_state }}
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+        {% endif %}
+
+        {# Routing Reference #}
+        {% if module.developer_docs.routing_reference %}
+        <div class="col-12">
+          <article class="glass-panel p-4">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <h3 class="h5 mb-0"><i class="bi bi-route me-2 text-danger"></i>Contrato de Enrutamiento Presupuestal</h3>
+            </div>
+            <p class="text-secondary small mb-3">
+              Grupo de rutas con prefijo <code class="text-warning">/{{ module.developer_docs.routing_reference.prefix }}</code> y nombre base <code class="text-warning">{{ module.developer_docs.routing_reference.group_name }}</code>
+            </p>
+            <div class="table-responsive">
+              <table class="table table-dark table-sm table-borderless align-middle mb-0" style="--bs-table-bg: transparent;">
+                <thead class="border-bottom border-secondary-subtle">
+                  <tr class="text-secondary small text-uppercase" style="letter-spacing:.04em">
+                    <th class="ps-0" style="width:12%">Método</th>
+                    <th style="width:38%">URI</th>
+                    <th style="width:30%">Controlador @ Acción</th>
+                    <th class="pe-0" style="width:20%">Nombre Alias</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for route in module.developer_docs.routing_reference.endpoints %}
+                    <tr class="border-bottom border-dark-subtle small">
+                      <td class="ps-0 py-2">
+                        <span class="badge {% if route.method == 'GET' %}text-bg-success{% else %}text-bg-warning text-dark{% endif %} rounded-pill">{{ route.method }}</span>
+                      </td>
+                      <td class="py-2 font-monospace text-info">{{ route.uri }}</td>
+                      <td class="text-secondary py-2 font-monospace">{{ route.action }}</td>
+                      <td class="pe-0 py-2 text-warning font-monospace">{{ route.route_name }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+        {% endif %}
+
+        {# Environment Setup #}
+        {% if module.developer_docs.environment_setup %}
+        <div class="col-12">
+          <article class="glass-panel p-4">
+            <h3 class="h5 mb-3"><i class="bi bi-pc-display me-2 text-secondary"></i>Entorno de Desarrollo Local</h3>
+            <div class="row g-4">
+              <div class="col-md-5">
+                <p class="fw-semibold mb-2 small text-secondary">Requisitos:</p>
+                <div class="d-flex flex-wrap gap-2">
+                  {% for req in module.developer_docs.environment_setup.requirements %}
+                    <span class="badge bg-secondary bg-opacity-10 text-light border border-secondary-subtle">{{ req }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="col-md-7">
+                <p class="fw-semibold mb-2 small text-secondary">Comandos Útiles:</p>
+                <div class="d-flex flex-column gap-2">
+                  {% for label, command in module.developer_docs.environment_setup.commands %}
+                    <div class="d-flex justify-content-between align-items-center p-2 rounded bg-dark border border-secondary-subtle">
+                      <span class="small text-secondary">{{ label }}</span>
+                      <code class="text-info small">{{ command }}</code>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+        {% endif %}
+
+      </div>
     </section>
   {% endif %}
   {# ── Módulos relacionados + Recursos ──────────────────────────────── #}

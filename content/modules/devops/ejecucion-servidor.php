@@ -15,7 +15,7 @@ return [
         [
             'icon'  => 'bi-gear-fill',
             'title' => 'Requisitos previos',
-            'text'  => 'PHP 8.2+, Composer, Node.js 18+, y la base de datos configurada y accesible.',
+            'text'  => 'PHP 8.2+, Composer, Node.js 18+,laravel 12 y la base de datos configurada y accesible.',
         ],
         [
             'icon'  => 'bi-terminal',
@@ -151,126 +151,7 @@ return [
             'url'   => 'https://vite.dev/',
         ],
     ],
-    'module_guide'   => [
-        'title'       => 'Estructura para agregar un módulo nuevo al proyecto',
-        'description' => 'Al crear un nuevo módulo en vermqen-laravel se debe seguir la estructura estándar del proyecto. Cada módulo se encapsula en su propia carpeta, documentado con su nombre en controladores, modelos, vistas y rutas.',
-        'steps'       => [
-            [
-                'icon'        => 'bi-folder-plus',
-                'label'       => '1. Controlador del módulo',
-                'path'        => 'app/Http/Controllers/NombreModulo/',
-                'description' => 'Crear la carpeta con el nombre del módulo y dentro el controlador principal. Usar PascalCase para el namespace y el nombre de clase.',
-                'example'     => "namespace App\\Http\\Controllers\\NombreModulo;\n\nuse App\\Http\\Controllers\\Controller;\n\n// ── NombreModulo ──────────────────────────────────\nclass NombreModuloController extends Controller\n{\n    public function index() { }\n    public function create() { }\n    public function store() { }\n    public function edit() { }\n    public function update() { }\n    public function destroy() { }\n}",
-            ],
-            [
-                'icon'        => 'bi-database',
-                'label'       => '2. Modelo Eloquent',
-                'path'        => 'app/Models/NombreModulo.php',
-                'description' => 'Crear el modelo que representa la entidad en base de datos. Definir la tabla, los campos fillable y las relaciones necesarias.',
-                'example'     => "namespace App\\Models;\n\nuse Illuminate\\Database\\Eloquent\\Model;\n\n// ── NombreModulo ──────────────────────────────────\nclass NombreModulo extends Model\n{\n    protected \$table    = 'nombre_modulo';\n    protected \$fillable = ['campo_1', 'campo_2'];\n}",
-            ],
-            [
-                'icon'        => 'bi-layout-text-window',
-                'label'       => '3. Vistas del módulo',
-                'path'        => 'resources/views/nombre-modulo/',
-                'description' => 'Crear la carpeta con el slug del módulo (kebab-case) y las vistas Blade que necesite: index, create, edit y show.',
-                'example'     => "resources/views/nombre-modulo/\n├── index.blade.php     ← listado\n├── create.blade.php    ← formulario de creación\n├── edit.blade.php      ← formulario de edición\n└── show.blade.php      ← detalle de un registro",
-            ],
-            [
-                'icon'        => 'bi-diagram-3',
-                'label'       => '4. Módulos con múltiples secciones',
-                'path'        => 'resources/views/nombre-modulo/seccion/',
-                'description' => 'Si el módulo es complejo y contiene varias entidades o submódulos, organízalas en carpetas separadas dentro del módulo. Cada carpeta debe contener sus respectivas acciones CRUD.',
-                'example'     => "resources/views/sistema_control_portatiles/\n├── asignaciones/\n│   ├── index.blade.php\n│   ├── create.blade.php\n│   └── edit.blade.php\n├── devoluciones/\n│   ├── index.blade.php\n│   └── create.blade.php\n└── portatiles/\n    ├── index.blade.php\n    └── show.blade.php",
-            ],
-            [
-                'icon'        => 'bi-signpost-2',
-                'label'       => '5. Rutas en web.php',
-                'path'        => 'routes/web.php',
-                'description' => 'Registrar las rutas del módulo agrupadas bajo su prefijo y name, documentadas con un comentario separador que lleva el nombre del módulo.',
-                'example'     => "// ── NombreModulo ──────────────────────────────────\nuse App\\Http\\Controllers\\NombreModulo\\NombreModuloController;\n\nRoute::prefix('nombre-modulo')\n     ->name('nombre-modulo.')\n     ->middleware(['auth'])\n     ->group(function () {\n         Route::get('/',        [NombreModuloController::class, 'index' ])->name('index');\n         Route::get('/crear',   [NombreModuloController::class, 'create'])->name('create');\n         Route::post('/',       [NombreModuloController::class, 'store' ])->name('store');\n         Route::get('/{id}',    [NombreModuloController::class, 'show'  ])->name('show');\n         Route::put('/{id}',    [NombreModuloController::class, 'update'])->name('update');\n         Route::delete('/{id}', [NombreModuloController::class, 'destroy'])->name('destroy');\n     });",
-            ],
-            [
-                'icon'        => 'bi-shield-lock',
-                'label'       => '6. Permisos y Accesos (Visualización local)',
-                'path'        => 'Base de datos (user_app_access)',
-                'description' => 'Para poder visualizar y testear el nuevo módulo en tu entorno local, asegúrate de que tu usuario tenga rol de Administrador. Si el sistema restringe vistas por módulo y no logras verlo, debes otorgarte permisos insertando el registro correspondiente que vincule tu usuario al módulo en la tabla `user_app_access`.',
-                'is_alert'    => true,
-            ],
-        ],
-    ],
-    'module_creation' => [
-        'title'       => 'Creación de Módulos desde Consola',
-        'description' => 'Pasos rápidos para generar toda la estructura base de un nuevo módulo utilizando los comandos de Artisan, siguiendo el patrón Modelo-Vista-Controlador (MVC).',
-        'steps'       => [
-            [
-                'icon'        => 'bi-database-add',
-                'label'       => '1. Generar Modelo y Migración',
-                'path'        => 'Terminal',
-                'description' => 'El flag `-m` le dice a Artisan que además del Modelo Eloquent, genere instantáneamente su archivo de migración en la carpeta database/migrations.',
-                'example'     => "php artisan make:model NombreModulo -m",
-            ],
-            [
-                'icon'        => 'bi-braces',
-                'label'       => '2. Generar Controlador con Recursos',
-                'path'        => 'Terminal',
-                'description' => 'El flag `-r` (resource) crea un controlador que ya incluye todos los métodos CRUD vacíos: index, create, store, show, edit, update, destroy.',
-                'example'     => "php artisan make:controller NombreModulo/NombreModuloController -r",
-            ],
-            [
-                'icon'        => 'bi-window-plus',
-                'label'       => '3. Crear Vistas y Rutas (Manual)',
-                'path'        => 'Editor',
-                'description' => 'Artisan no genera vistas automáticamente. Crea tu carpeta en `resources/views/nombre-modulo/` con tus vistas Blade/Twig, y registra el controlador generado en `routes/web.php` usando `Route::resource()` o definiendo las rutas manualmente.',
-                'example'     => "mkdir resources/views/nombre-modulo",
-            ],
-        ],
-    ],
-    'microservice_guide' => [
-        'title'       => 'Implementación de Microservicios',
-        'description' => 'Si el módulo que estás creando es un microservicio (como Almacén) diseñado para ser consumido por un módulo principal (como Ciudad Verde), el enfoque de implementación cambia ligeramente.',
-        'steps'       => [
-            [
-                'icon'        => 'bi-diagram-3',
-                'label'       => '1. Estructura Desacoplada',
-                'path'        => 'Controladores / Modelos',
-                'description' => 'El microservicio debe operar de forma independiente. Coloca sus controladores en `app/Http/Controllers/Microservicios/` para separarlos de los módulos de negocio principales.',
-            ],
-            [
-                'icon'        => 'bi-router',
-                'label'       => '2. Exposición de Rutas',
-                'path'        => 'routes/api.php o web.php',
-                'description' => 'Dependiendo de si el microservicio devuelve vistas o solo JSON, regístralo en el archivo de rutas correspondiente y bajo un prefijo único (ej. `microservicios/almacen`).',
-                'example'     => "Route::prefix('microservicios/nombre-micro')->group(function () {\n    // Rutas exclusivas del microservicio\n});",
-            ],
-            [
-                'icon'        => 'bi-plugin',
-                'label'       => '3. Integración con el Módulo Principal',
-                'path'        => 'Servicios',
-                'description' => 'El módulo principal no debe consultar directamente la base de datos del microservicio a menos que sea estrictamente necesario. Lo ideal es que interactúen a través de clases de Servicio internas o llamadas HTTP si están muy desacoplados.',
-            ],
-        ],
-    ],
-    'email_setup'    => [
-        'title'       => 'Configuración de Correos y Creación de Usuario Local',
-        'description' => 'Para el envío de correos y confirmación de cuentas en local, puedes configurar el servicio SMTP de Gmail en el `.env`. Si prefieres evitar este paso y saltar la confirmación, puedes crear un usuario ya verificado directamente mediante consola interactiva (Tinker) sin crear archivos adicionales.',
-        'steps'       => [
-            [
-                'icon'        => 'bi-envelope-at',
-                'label'       => '1. Configuración de correo con Gmail en .env',
-                'path'        => '.env',
-                'description' => 'Para usar Gmail, ve a la "Gestión de tu cuenta de Google", activa la "Verificación en dos pasos" (si no la tienes activa) y crea una "Contraseña de aplicación". Copia la clave generada de 16 letras y colócala en MAIL_PASSWORD.',
-                'example'     => "MAIL_MAILER=smtp\nMAIL_HOST=smtp.gmail.com\nMAIL_PORT=587\nMAIL_USERNAME=\"tu_correo@gmail.com\"\nMAIL_PASSWORD=\"xxxx xxxx xxxx xxxx\"\nMAIL_ENCRYPTION=tls\nMAIL_FROM_ADDRESS=\"tu_correo@gmail.com\"\nMAIL_FROM_NAME=\"\${APP_NAME}\"",
-            ],
-            [
-                'icon'        => 'bi-terminal-fill',
-                'label'       => '2. Crear usuario verificado con Tinker',
-                'path'        => 'Terminal',
-                'description' => 'Ejecuta `php artisan tinker` para interactuar con la base de datos y crea un usuario con la fecha actual en `email_verified_at` para omitir la confirmación por correo.',
-                'example'     => "php artisan tinker\n\nuse App\\Models\\User;\n\nUser::create([\n    'name' => 'Usuario Admin',\n    'email' => 'admin@ejemplo.com',\n    'password' => 'Secreta123', // Usar bcrypt('Secreta123') si el modelo no tiene el cast automático\n    'rol' => 'Admin',\n    'active' => true,\n    'email_verified_at' => now(),\n]);",
-            ],
-        ],
-    ],
+
     'assets_build'   => [
         'title'       => 'Compilación de Assets (Vite y TailwindCSS)',
         'description' => 'El frontend de la aplicación principal utiliza Vite y TailwindCSS. Entender cómo se compilan y enlazan los archivos es clave para el despliegue.',

@@ -40,6 +40,16 @@ return [
             'description' => 'Módulo principal que consume este microservicio para gestión operativa de activos.',
         ],
     ],
+    'architecture_docs' => [
+        [
+            'title'       => 'Arquitectura del Microservicio Integrado',
+            'description' => 'Almacén opera como un microservicio dependiente del módulo principal **Ciudad Verde**. Por ello, mantiene estrictamente la estructura de carpetas de su módulo padre: sus controladores residen bajo `app/Http/Controllers/CiudadVerde/Almacen`, sus modelos en `app/Models/CiudadVerde/Almacen` y sus vistas en `resources/views/ciudad_verde/almacen`. Esta práctica garantiza que los microservicios mantengan la cohesión del dominio al que pertenecen sin fragmentar el monolito modular.',
+        ],
+        [
+            'title'       => 'Procesamiento de Inventario en Tiempo Real',
+            'description' => 'A nivel de lógica backend, el microservicio está optimizado para capturar entradas rápidas de hardware (cámaras o escáneres USB) y clasificar instantáneamente los activos (con placa y sin placa), mapeando la base de datos de elementos físicos a ubicaciones jerárquicas (Sede -> Piso -> Ambiente) y alimentando los gráficos de progreso en tiempo real.',
+        ]
+    ],
     'resources'       => [
         [
             'label' => 'Repositorio del proyecto',

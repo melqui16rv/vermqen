@@ -1,0 +1,10 @@
+.feature-card{transition:all .4s cubic-bezier(.25,.8,.25,1);cursor:pointer;position:relative;overflow:hidden}
+.feature-card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.03) 100%);opacity:0;transition:opacity .4s ease;pointer-events:none}
+.feature-card:focus-within::after,.feature-card:hover::after{opacity:1}
+.feature-card:focus-within,.feature-card:hover{transform:translateY(-5px);box-shadow:0 12px 30px rgba(0,0,0,.3)!important}
+.feature-icon-wrapper{transition:all .4s cubic-bezier(.25,.8,.25,1)}
+.feature-card:focus-within .feature-icon-wrapper,.feature-card:hover .feature-icon-wrapper{transform:scale(1.15) rotate(8deg) translateY(-2px)}
+.feature-text-wrapper{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.25,.8,.25,1)}
+.feature-card:focus-within .feature-text-wrapper,.feature-card:hover .feature-text-wrapper{grid-template-rows:1fr}
+.feature-text{overflow:hidden;opacity:0;transform:translateY(10px);transition:all .4s cubic-bezier(.25,.8,.25,1)}
+.feature-card:focus-within .feature-text,.feature-card:hover .feature-text{opacity:1;transform:translateY(0);transition-delay:.15s}

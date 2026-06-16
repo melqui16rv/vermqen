@@ -102,7 +102,6 @@
   {% endif %}
 
   {# ── Flujo de pasos + Checklist + Recursos ────────────────────────── #}
-
   <section class="row g-4" data-aos="fade-up" data-aos-delay="120">
 
     {% if module.workflow %}
@@ -122,7 +121,8 @@
       </div>
     {% endif %}
 
-    <div class="{{ module.workflow ? 'col-lg-5' : 'col-12' }}">
+    {# Solución del operador condicional usando sintaxis limpia de Twig #}
+    <div class="{{ module.workflow is defined and module.workflow ? 'col-lg-5' : 'col-12' }}">
 
       {% if module.checklist %}
         <article class="glass-panel p-4 p-lg-5 mb-4">
@@ -197,6 +197,36 @@
 
       <div class="d-flex flex-column gap-3">
         {% for step in module.module_creation.steps %}
+          <div class="workflow-step p-3 p-lg-4 {% if step.is_alert %}border border-warning border-2 bg-warning bg-opacity-10 shadow-lg{% endif %}" style="{% if step.is_alert %}transform: scale(1.02); z-index: 10;{% endif %}">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+              <i class="bi {{ step.icon }} {% if step.is_alert %}text-warning{% else %}text-primary{% endif %} fs-5"></i>
+              <p class="fw-semibold mb-0 {% if step.is_alert %}text-warning{% endif %}">{{ step.label }}</p>
+              {% if step.path %}
+                <code class="code-chip ms-auto {% if step.is_alert %}bg-warning text-dark{% else %}text-warning{% endif %}">{{ step.path }}</code>
+              {% endif %}
+            </div>
+            <p class="text-secondary mb-2 small">{{ step.description }}</p>
+            {% if step.example %}
+              <pre class="mb-0 p-3 rounded-2 border border-secondary-subtle small"
+                   style="background:rgba(0,0,0,.35);color:#e2e8f0;overflow-x:auto;white-space:pre;line-height:1.6"><code>{{ step.example }}</code></pre>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# ── Layout y Navegación del Módulo ───────────────────────────────── #}
+  {% if module.layout_navigation %}
+    <section class="glass-panel p-4 p-lg-5 mt-4" data-aos="fade-up" data-aos-delay="86">
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <div class="icon-pill"><i class="bi bi-layout-sidebar"></i></div>
+        <h2 class="h5 mb-0">{{ module.layout_navigation.title }}</h2>
+      </div>
+      <p class="text-secondary mb-4">{{ module.layout_navigation.description }}</p>
+
+      <div class="d-flex flex-column gap-3">
+        {% for step in module.layout_navigation.steps %}
           <div class="workflow-step p-3 p-lg-4 {% if step.is_alert %}border border-warning border-2 bg-warning bg-opacity-10 shadow-lg{% endif %}" style="{% if step.is_alert %}transform: scale(1.02); z-index: 10;{% endif %}">
             <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
               <i class="bi {{ step.icon }} {% if step.is_alert %}text-warning{% else %}text-primary{% endif %} fs-5"></i>
