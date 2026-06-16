@@ -57,10 +57,16 @@ return [
             'description' => 'El módulo cuenta con un ecosistema propio de seguridad. En lugar de depender exclusivamente de un panel global, incluye módulos internos de "Gestión de Usuarios" y "Solicitudes de Rol", permitiendo a los administradores financieros delegar responsabilidades, aprobar cambios de rol y garantizar que procesos críticos como la emisión de CDP u OP estén restringidos.',
         ]
     ],
-    'resources'      => [
+    'resources' => [
         [
             'label' => 'Repositorio del proyecto',
             'url'   => 'https://github.com/melqui16rv',
         ],
+        [
+            'label' => 'Guía completa: Planeación y su Uso',
+            'url'   => '/planeacion-uso', 
+        ],
+    
+
     ],
 ];
