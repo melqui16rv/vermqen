@@ -18,6 +18,10 @@ return static function (App $app, PageController $pageController): void {
         ]);
     });
 
+    // Ruta para mostrar todos los módulos de una categoría
+    $app->get('/{category}', [$pageController, 'category']);
+
+    // Ruta para un módulo específico
     $app->group('/{category}', function (RouteCollectorProxy $group) use ($pageController) {
         $group->get('/{slug}', [$pageController, 'module']);
     });

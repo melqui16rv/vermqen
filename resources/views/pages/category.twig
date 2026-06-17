@@ -1,0 +1,250 @@
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+<div class="modules-layout">
+    <aside class="modules-sidebar compact">
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-logo">
+                <span class="brand-dot-small"></span>
+                <span class="sidebar-brand">VERMQEN</span>
+            </a>
+        </div>
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">{{ categoryLabel }}</h3>
+            <ul class="module-list">
+                {% for module_item in modules %}
+                    <li>
+                        <a href="{{ module_item.path }}" 
+                           class="module-link"
+                           title="{{ module_item.title }}">
+                            {{ module_item.title }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </aside>
+
+    <main class="modules-main">
+        <!-- Hero Section -->
+        <section class="category-hero">
+            <div class="hero-content">
+                <h1 class="hero-title">{{ categoryLabel }}</h1>
+                <p class="hero-subtitle">Explora todos los módulos disponibles en esta categoría</p>
+            </div>
+        </section>
+
+        <!-- Category Modules Grid -->
+        <section class="category-modules-section">
+            <div class="modules-grid">
+                {% for module in modules %}
+                    <a href="{{ module.path }}" class="module-card" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                        <div class="module-card-inner">
+                            <div class="module-card-header">
+                                <div class="module-card-color" style="background-color: var(--accent-{{ (loop.index0 % 8) + 1 }})"></div>
+                                <span class="module-card-tag">{{ module.tag }}</span>
+                            </div>
+                            <div class="module-card-body">
+                                <h3 class="module-card-title">{{ module.title }}</h3>
+                                {% if module.summary %}
+                                    <p class="module-card-summary">{{ module.summary }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="module-card-footer">
+                                <span class="module-card-link">Leer más →</span>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</div>
+
+<style>
+.category-hero {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+    padding: 3rem 2rem;
+    border-radius: 1rem;
+    margin-bottom: 3rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.hero-content {
+    max-width: 800px;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: rgba(243, 244, 246, 0.7);
+}
+
+.category-modules-section {
+    margin-top: 2rem;
+}
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.module-card {
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.module-card:hover .module-card-inner {
+    transform: translateY(-8px);
+    border-color: rgba(139, 92, 246, 0.6);
+    box-shadow: 0 16px 40px rgba(139, 92, 246, 0.2);
+}
+
+.module-card:hover .module-card-link {
+    transform: translateX(4px);
+}
+
+.module-card-inner {
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.4));
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.module-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.module-card-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 0.5rem;
+    opacity: 0.8;
+}
+
+.module-card-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    background: rgba(139, 92, 246, 0.2);
+    border-radius: 999px;
+    color: #a78bfa;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.module-card-body {
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.module-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f3f4f6;
+    margin-bottom: 0.5rem;
+}
+
+.module-card-summary {
+    font-size: 0.9rem;
+    color: rgba(243, 244, 246, 0.6);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.module-card-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.module-card-link {
+    font-size: 0.9rem;
+    color: #8b5cf6;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+/* Light mode */
+body.light-mode .category-hero {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(236, 72, 153, 0.04));
+    border-color: rgba(139, 92, 246, 0.1);
+}
+
+body.light-mode .hero-subtitle {
+    color: rgba(55, 65, 81, 0.7);
+}
+
+body.light-mode .module-card-inner {
+    background: linear-gradient(135deg, rgba(249, 250, 251, 0.9), rgba(243, 244, 246, 0.8));
+    border-color: rgba(139, 92, 246, 0.15);
+}
+
+body.light-mode .module-card-title {
+    color: #1f2937;
+}
+
+body.light-mode .module-card-summary {
+    color: rgba(55, 65, 81, 0.7);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .modules-layout {
+        grid-template-columns: 160px 1fr;
+        gap: 1.5rem;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .modules-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .modules-layout {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modules-sidebar {
+        position: static;
+        max-height: none;
+        margin-bottom: 2rem;
+    }
+
+    .hero-title {
+        font-size: 1.5rem;
+    }
+
+    .modules-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

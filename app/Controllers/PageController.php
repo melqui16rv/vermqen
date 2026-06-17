@@ -111,6 +111,54 @@ final class PageController
         ]);
     }
 
+    /**
+     * Mostrar todos los módulos de una categoría
+     *
+     * @param array<string, string> $args
+     */
+    public function category(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        $categoryKey = strtolower((string)($args['category'] ?? ''));
+        $basePath    = $this->detectBasePath($request);
+        $queryMode   = $this->useQueryRouting($request);
+
+        $categoryModules = [];
+        foreach ($this->contentRepository->allModules() as $slug => $module) {
+            if ((string)($module['category'] ?? 'general') !== $categoryKey) {
+                continue;
+            }
+
+            $categoryModules[] = [
+                'slug'    => $slug,
+                'title'   => $module['title'] ?? $slug,
+                'summary' => $module['summary'] ?? '',
+                'tag'     => $module['tag'] ?? 'Documentación',
+                'path'    => $this->routePath($basePath, '/' . $categoryKey . '/' . $slug, $queryMode),
+            ];
+        }
+
+        if ($categoryModules === []) {
+            return $this->twig->render($response->withStatus(404), 'pages/not-found.twig', [
+                'pageTitle'    => 'Página no encontrada',
+                'navigation'   => $this->buildNavigation($basePath, null, $queryMode),
+                'requestedSlug' => $categoryKey,
+                'homePath'     => $this->routePath($basePath, '/', $queryMode),
+                'assetBase'    => $this->assetBase($basePath),
+            ]);
+        }
+
+        return $this->twig->render($response, 'pages/category.twig', [
+            'pageTitle'    => $this->categoryLabel($categoryKey),
+            'currentSlug'  => null,
+            'navigation'   => $this->buildNavigation($basePath, null, $queryMode),
+            'categoryKey'  => $categoryKey,
+            'categoryLabel' => $this->categoryLabel($categoryKey),
+            'modules'      => $categoryModules,
+            'homePath'     => $this->routePath($basePath, '/', $queryMode),
+            'assetBase'    => $this->assetBase($basePath),
+        ]);
+    }
+
     // ─── Navigation ──────────────────────────────────────────────────────────
 
     /**
