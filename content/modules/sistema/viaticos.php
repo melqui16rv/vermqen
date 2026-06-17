@@ -65,11 +65,11 @@ return [
     'resources'        => [
         [
             'label' => 'Documentación técnica',
-            'url'   => '/instrucciones -viaticos',
+            'url'   => '/microservicios/instrucciones-viaticos',
         ],
         [
             'label' => 'Dashboard de Viáticos',
-            'url'   => '/viaticos',
+            'url'   => '/sistema/viaticos',
         ],
     ],
 ];

@@ -10,31 +10,20 @@ use Slim\Views\TwigMiddleware;
 
 require __DIR__ . '/assets/vendor/autoload.php';
 
-// El vendor/ fue instalado desde assets/, por lo que el mapa PSR-4 generado por
-// Composer apunta App\ a assets/app/ en lugar de app/ (raíz del proyecto).
-// Este autoloader de prepend lo corrige sin modificar archivos auto-generados.
 spl_autoload_register(static function (string $class): void {
-    if (!str_starts_with($class, 'App\\')) {
-        return;
-    }
+    if (!str_starts_with($class, 'App\\')) return;
     $relative = str_replace(['App\\', '\\'], ['', \DIRECTORY_SEPARATOR], $class);
     $file = __DIR__ . \DIRECTORY_SEPARATOR . 'app' . \DIRECTORY_SEPARATOR . $relative . '.php';
-    if (is_file($file)) {
-        require_once $file;
-    }
-}, true, true); // prepend=true → corre antes que el loader de Composer
+    if (is_file($file)) require_once $file;
+}, true, true);
 
 if (PHP_SAPI === 'cli-server') {
     $requestPath = (string)parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     $staticFile = __DIR__ . $requestPath;
-    if (is_file($staticFile) && basename($requestPath) !== 'index.php') {
-        return false;
-    }
+    if (is_file($staticFile) && basename($requestPath) !== 'index.php') return false;
 }
 
-if (!isset($_SERVER['ORIGINAL_REQUEST_URI'])) {
-    $_SERVER['ORIGINAL_REQUEST_URI'] = $_SERVER['REQUEST_URI'] ?? '/';
-}
+if (!isset($_SERVER['ORIGINAL_REQUEST_URI'])) $_SERVER['ORIGINAL_REQUEST_URI'] = $_SERVER['REQUEST_URI'] ?? '/';
 
 $scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
 $basePath = rtrim(str_replace('/index.php', '', $scriptPath), '/');
@@ -48,19 +37,15 @@ if (is_string($routeOverride) && $routeOverride !== '') {
 }
 
 $app = AppFactory::create();
+if ($basePath !== '') $app->setBasePath($basePath);
 
-if ($basePath !== '') {
-    $app->setBasePath($basePath);
-}
-
-$twig = Twig::create(__DIR__ . '/resources/views', [
-    'cache' => false,
-]);
+$twig = Twig::create(__DIR__ . '/resources/views', ['cache' => false]);
 $app->add(TwigMiddleware::create($app, $twig));
 
 $contentRepository = new ContentRepository(__DIR__ . '/content');
 $pageController = new PageController($twig, $contentRepository);
 
+// Invocación directa del archivo de rutas
 (require __DIR__ . '/app/Routes/web.php')($app, $pageController);
 
 $app->addRoutingMiddleware();

@@ -31,7 +31,13 @@ foreach ($categoryOrder as $category) {
             continue;
         }
 
-        $slug = basename($file, '.php');
+        $slug = strtolower(trim(basename($file, '.php')));
+        $slug = preg_replace('/\s+/', '-', $slug) ?: $slug;
+        $slug = preg_replace('/[^a-z0-9_-]+/', '', $slug) ?: $slug;
+        $slug = preg_replace('/-{2,}/', '-', $slug) ?: $slug;
+        $slug = preg_replace('/_{2,}/', '_', $slug) ?: $slug;
+        $slug = trim($slug, '-_');
+
         $data = require $file;
 
         if (!is_array($data)) {

@@ -60,7 +60,7 @@ return [
     'resources'        => [
         [
             'label' => 'Importaciones y auditorias ',
-            'url'   => '/Importaciones',
+            'url'   => '/sistema/importaciones',
         ],
         [
             'label' => 'Monitoreo de Cargas Masivas',

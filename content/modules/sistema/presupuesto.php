@@ -64,7 +64,7 @@ return [
         ],
         [
             'label' => 'Guía completa: Planeación y su Uso',
-            'url'   => '/planeacion-uso', 
+            'url'   => '/sistema/planeacion_uso', 
         ],
     
 

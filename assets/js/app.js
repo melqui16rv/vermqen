@@ -83,8 +83,8 @@
 
   const onMove = (event) => {
     const rect = hero.getBoundingClientRect();
-    const rotateY = (event.clientX - (rect.left + rect.width / 2)) / 45;
-    const rotateX = ((rect.top + rect.height / 2) - event.clientY) / 60;
+    const rotateY = (event.clientX - (rect.left + rect.width / 2)) / 190;
+    const rotateX = ((rect.top + rect.height / 2) - event.clientY) / 230;
     hero.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   };
 

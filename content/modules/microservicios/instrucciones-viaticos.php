@@ -65,11 +65,11 @@ return [
     'resources'        => [
         [
             'label' => 'Documentación Base (Presupuesto General)',
-            'url'   => '/presupuesto',
+            'url'   => '/sistema/presupuesto',
         ],
         [
             'label' => 'Modulo Viáticos',
-            'url'   => '/viaticos',
+            'url'   => '/sistema/viaticos',
         ],
     ],
 ];

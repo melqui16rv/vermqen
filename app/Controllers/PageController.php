@@ -93,8 +93,9 @@ final class PageController
             ]);
         }
 
-        $module['resources']    = $this->normalizeResourceUrls($module['resources'] ?? [], $basePath);
-        $module['contribution'] = $this->normalizeContribution($module['contribution'] ?? null, $basePath);
+        $module['resources']         = $this->normalizeResourceUrls($module['resources'] ?? [], $basePath, $queryMode);
+        $module['related_modules']    = $this->normalizeRelatedModules($module['related_modules'] ?? [], $basePath, $queryMode);
+        $module['contribution']       = $this->normalizeContribution($module['contribution'] ?? null, $basePath);
 
         // Fase 3: cada módulo elige su propio template. Fallback al clásico.
         $template = (string)($module['template'] ?? 'pages/module.twig');
@@ -189,16 +190,81 @@ final class PageController
      * @param array<int, array<string, mixed>> $resources
      * @return array<int, array<string, mixed>>
      */
-    private function normalizeResourceUrls(array $resources, string $basePath): array
+    private function normalizeResourceUrls(array $resources, string $basePath, bool $queryMode): array
     {
         foreach ($resources as $index => $resource) {
-            $url = (string)($resource['url'] ?? '');
-            if ($url !== '' && str_starts_with($url, '/')) {
-                $resources[$index]['url'] = $this->withBasePath($basePath, $url);
+            $url = trim((string)($resource['url'] ?? ''));
+            if ($url === '') {
+                unset($resources[$index]);
+                continue;
             }
+
+            if (!str_starts_with($url, '/')) {
+                continue;
+            }
+
+            $route = ltrim($url, '/');
+            $parts = array_values(array_filter(explode('/', $route), static fn (string $segment): bool => $segment !== ''));
+            if ($parts === []) {
+                unset($resources[$index]);
+                continue;
+            }
+
+            $normalizedParts = array_map([$this, 'normalizeSlug'], $parts);
+            if (count($normalizedParts) > 1) {
+                $resources[$index]['url'] = $this->withBasePath($basePath, '/' . implode('/', $normalizedParts));
+                continue;
+            }
+
+            $slug = $normalizedParts[0];
+            $module = $this->contentRepository->findModule($slug);
+            if ($module !== null) {
+                $category = (string)($module['category'] ?? 'general');
+                $resources[$index]['url'] = $this->routePath($basePath, '/' . $category . '/' . $slug, $queryMode);
+                continue;
+            }
+
+            $resources[$index]['url'] = $this->withBasePath($basePath, '/' . $slug);
         }
 
-        return $resources;
+        return array_values($resources);
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $relatedModules
+     * @return array<int, array<string, mixed>>
+     */
+    private function normalizeRelatedModules(array $relatedModules, string $basePath, bool $queryMode): array
+    {
+        foreach ($relatedModules as $index => $relatedModule) {
+            $slug = strtolower(trim((string)($relatedModule['slug'] ?? '')));
+            if ($slug === '') {
+                unset($relatedModules[$index]);
+                continue;
+            }
+
+            $slug = $this->normalizeSlug($slug);
+            $module = $this->contentRepository->findModule($slug);
+            if ($module !== null) {
+                $category = (string)($module['category'] ?? 'general');
+                $relatedModule['url'] = $this->routePath($basePath, '/' . $category . '/' . $slug, $queryMode);
+            } else {
+                $relatedModule['url'] = $this->withBasePath($basePath, '/' . $slug);
+            }
+
+            $relatedModules[$index] = $relatedModule;
+        }
+
+        return array_values($relatedModules);
+    }
+
+    private function normalizeSlug(string $value): string
+    {
+        $slug = strtolower(trim($value));
+        $slug = preg_replace('/[^a-z0-9_-]+/', '-', $slug) ?: $slug;
+        $slug = preg_replace('/-{2,}/', '-', $slug) ?: $slug;
+        $slug = preg_replace('/_{2,}/', '_', $slug) ?: $slug;
+        return trim($slug, '-_');
     }
 
     /**

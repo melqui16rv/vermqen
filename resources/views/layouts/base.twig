@@ -30,7 +30,13 @@
 							<span class="navbar-toggler-icon"></span>
 						</button>
 						<div class="collapse navbar-collapse" id="wikiNav">
-							<ul class="navbar-nav ms-auto gap-lg-1">
+							<ul class="navbar-nav ms-auto gap-lg-1 align-items-center">
+								<li class="nav-item me-2">
+									<button type="button" class="btn btn-outline-light btn-sm theme-toggle" onclick="window.toggleTheme()" aria-label="Alternar modo claro/oscuro">
+										<i class="bi bi-sun-fill theme-icon-light"></i>
+										<i class="bi bi-moon-fill theme-icon-dark"></i>
+									</button>
+								</li>
 								{% for item in navigation %}
 									{% if item.type == 'dropdown' %}
 										{# Fase 2: ítem de tipo dropdown (categoría de módulos) #}

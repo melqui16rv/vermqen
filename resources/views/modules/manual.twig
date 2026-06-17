@@ -111,9 +111,9 @@
           <div class="d-flex flex-column gap-3">
             {% for item in module.workflow %}
               <div class="workflow-step p-3">
-                <p class="fw-semibold mb-1">{{ item.step }}</p>
-                <p class="text-secondary mb-2">{{ item.detail }}</p>
                 <code class="code-chip">{{ item.command }}</code>
+                <p class="fw-semibold mb-1 mt-3">{{ item.step }}</p>
+                <p class="text-secondary mb-0">{{ item.detail }}</p>
               </div>
             {% endfor %}
           </div>
@@ -402,9 +402,9 @@
         <div class="d-flex flex-column gap-3">
           {% for item in module.refresh_command.workflow %}
             <div class="workflow-step p-3">
-              <p class="fw-semibold mb-1">{{ item.step }}</p>
-              <p class="text-secondary mb-2">{{ item.detail }}</p>
               <code class="code-chip">{{ item.command }}</code>
+              <p class="fw-semibold mb-1 mt-3">{{ item.step }}</p>
+              <p class="text-secondary mb-0">{{ item.detail }}</p>
             </div>
           {% endfor %}
         </div>
