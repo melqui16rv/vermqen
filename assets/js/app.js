@@ -92,4 +92,5 @@
 
   hero.addEventListener('mousemove', onMove);
   hero.addEventListener('mouseleave', reset);
+  
 })();

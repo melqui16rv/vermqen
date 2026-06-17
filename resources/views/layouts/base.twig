@@ -1,89 +1,87 @@
 <!doctype html>
 <html lang="es">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>{{ pageTitle }}
-			· VERMQEN Wiki</title>
-		<meta name="description" content="Wiki colaborativa del proyecto VERMQEN">
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/css/bootstrap.min.css" rel="stylesheet">
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-		<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
-		<link href="{{ assetBase }}/assets/css/app.css" rel="stylesheet">
-	</head>
-	<body class="wiki-body">
-		<div class="bg-orb bg-orb-a"></div>
-		<div class="bg-orb bg-orb-b"></div>
-		<div class="bg-grid"></div>
-		<div class="site-shell">
-			<header class="site-header border-bottom border-dark-subtle" data-aos="fade-down" data-aos-duration="700">
-				<nav class="navbar navbar-expand-lg navbar-dark py-3">
-					<div class="container">
-						<a class="navbar-brand d-flex align-items-center gap-2" href="{{ navigation[0].path }}">
-							<span class="brand-dot"></span>
-							<span class="brand-title">VERMQEN Wiki</span>
-						</a>
-						<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#wikiNav" aria-controls="wikiNav" aria-expanded="false" aria-label="Navegación">
-							<span class="navbar-toggler-icon"></span>
-						</button>
-						<div class="collapse navbar-collapse" id="wikiNav">
-							<ul class="navbar-nav ms-auto gap-lg-1 align-items-center">
-								<li class="nav-item me-2">
-									<button type="button" class="btn btn-outline-light btn-sm theme-toggle" onclick="window.toggleTheme()" aria-label="Alternar modo claro/oscuro">
-										<i class="bi bi-sun-fill theme-icon-light"></i>
-										<i class="bi bi-moon-fill theme-icon-dark"></i>
-									</button>
-								</li>
-								{% for item in navigation %}
-									{% if item.type == 'dropdown' %}
-										{# Fase 2: ítem de tipo dropdown (categoría de módulos) #}
-										<li class="nav-item dropdown">
-											<a class="nav-link dropdown-toggle rounded-pill px-3 {{ item.active ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-												{{ item.label }}
-											</a>
-											<ul class="dropdown-menu dropdown-menu-dark border border-dark-subtle shadow">
-												{% for sub in item.items %}
-													<li>
-														<a class="dropdown-item rounded-1 {{ sub.active ? 'active' : '' }}" href="{{ sub.path }}">
-															{{ sub.label }}
-														</a>
-													</li>
-												{% endfor %}
-											</ul>
-										</li>
-									{% else %}
-										{# Ítem simple (Inicio) #}
-										<li class="nav-item">
-											<a class="nav-link rounded-pill px-3 {{ item.active ? 'active' : '' }}" href="{{ item.path }}">{{ item.label }}</a>
-										</li>
-									{% endif %}
-								{% endfor %}
-							</ul>
-						</div>
-					</div>
-				</nav>
-			</header>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ pageTitle }} · APP CIDE</title>
+    <meta name="description" content="Wiki colaborativa del proyecto APP-CIDE">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link href="{{ assetBase }}/assets/css/app.css" rel="stylesheet">
+</head>
+<body class="wiki-body">
+    <div class="bg-orb bg-orb-a"></div>
+    <div class="bg-orb bg-orb-b"></div>
+    <div class="bg-grid"></div>
 
-			<main class="py-4 py-lg-5">
-				<div class="container"> {% block content %}{% endblock %}
-					</div>
-				</main>
+    <div class="site-shell">
+        <header class="site-header border-bottom border-dark-subtle" data-aos="fade-down" data-aos-duration="700">
+            <nav class="navbar navbar-expand-lg navbar-dark py-3">
+                <div class="container">
+                    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ navigation[0].path }}">
+                        <span class="brand-dot"></span>
+                        <span class="brand-title">APP-CIDE</span>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#wikiNav" aria-controls="wikiNav" aria-expanded="false" aria-label="Navegación">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="wikiNav">
+                        <ul class="navbar-nav ms-auto gap-lg-1 align-items-center">
+                            <li class="nav-item me-2">
+                                <button type="button" class="btn btn-outline-light btn-sm theme-toggle" onclick="window.toggleTheme()" aria-label="Alternar modo claro/oscuro">
+                                    <i class="bi bi-sun-fill theme-icon-light"></i>
+                                    <i class="bi bi-moon-fill theme-icon-dark"></i>
+                                </button>
+                            </li>
+                            {% for item in navigation %}
+                                {% if item.type == 'dropdown' %}
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle rounded-pill px-3 {{ item.active ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ item.label }}</a>
+                                        <ul class="dropdown-menu dropdown-menu-dark border border-dark-subtle shadow">
+                                            {% for sub in item.items %}
+                                                <li><a class="dropdown-item rounded-1 {{ sub.active ? 'active' : '' }}" href="{{ sub.path }}">{{ sub.label }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% else %}
+                                    <li class="nav-item">
+                                        <a class="nav-link rounded-pill px-3 {{ item.active ? 'active' : '' }}" href="{{ item.path }}">{{ item.label }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
 
-				//
-				<footer class="border-top border-dark-subtle py-4">
-					<div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
-						<span>VERMQEN · Wiki colaborativa del proyecto</span>
-						<span>Stack: Slim 4 · Twig · Bootstrap 5 · Alpine.js</span>
-					</div>
-				</footer>
-			</div>
+        <aside class="sidebar-left">
+            </aside>
 
-			<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/js/bootstrap.bundle.min.js"></script>
-			<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-			<script src="{{ assetBase }}/assets/js/app.js"></script>
-		</body>
-	</html>
+        <main class="content-main">
+            <div class="container py-4 py-lg-5">
+                {% block content %}{% endblock %}
+            </div>
+            
+            <footer class="border-top border-dark-subtle py-4 mt-auto">
+                <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+                    <span>APP-CIDE· Wiki colaborativa del proyecto</span>
+                    <span>Stack: Slim 4 · Twig · Bootstrap 5 · Alpine.js</span>
+                </div>
+            </footer>
+        </main>
+
+        <aside class="sidebar-right">
+            </aside>
+    </div>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script src="{{ assetBase }}/assets/js/app.js"></script>
+</body>
+</html>
