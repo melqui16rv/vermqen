@@ -5,23 +5,59 @@
     <aside class="modules-sidebar compact">
         <div class="sidebar-header">
             <a href="/" class="sidebar-logo">
-                <span class="brand-dot-small"></span>
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="url(#gradient-logo)"/>
+                        <circle cx="12" cy="12" r="6" fill="#0a0e27" opacity="0.8"/>
+                        <text x="12" y="15" font-size="10" font-weight="700" text-anchor="middle" fill="#8b5cf6" font-family="Inter">V</text>
+                        <defs>
+                            <linearGradient id="gradient-logo" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#8b5cf6"/>
+                                <stop offset="100%" stop-color="#ec4899"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
                 <span class="sidebar-brand">VERMQEN</span>
             </a>
         </div>
-        <div class="sidebar-section">
-            <h3 class="sidebar-title">{{ categoryLabel }}</h3>
-            <ul class="module-list">
-                {% for module_item in modules %}
-                    <li>
-                        <a href="{{ module_item.path }}" 
-                           class="module-link"
-                           title="{{ module_item.title }}">
-                            {{ module_item.title }}
-                        </a>
-                    </li>
+
+        {# Buscador #}
+        <div class="sidebar-search">
+            <input type="text" id="moduleSearch" class="search-input" placeholder="Buscar módulo..." />
+            <i class="bi bi-search search-icon"></i>
+        </div>
+
+        {# Filtrador #}
+        <div class="sidebar-filter">
+            <select id="categoryFilter" class="filter-select">
+                <option value="">Todas las categorías</option>
+                {% for category in categories %}
+                    <option value="{{ category.key }}">{{ category.label }}</option>
                 {% endfor %}
-            </ul>
+            </select>
+            <i class="bi bi-funnel filter-icon"></i>
+        </div>
+
+        <div class="sidebar-content">
+            {% for category in categories %}
+                <div class="sidebar-section">
+                    <button class="sidebar-category-toggle" data-category="{{ category.key }}">
+                        <span class="category-title">{{ category.label }}</span>
+                        <i class="bi bi-chevron-down toggle-icon"></i>
+                    </button>
+                    <ul class="sidebar-modules" data-category="{{ category.key }}" style="max-height: 0;">
+                        {% for module in category.modules %}
+                            <li class="sidebar-module-item">
+                                <a href="{{ module.path }}" class="sidebar-module-link" data-category="{{ category.key }}" title="{{ module.title }}">
+                                    <span class="module-dot"></span>
+                                    {{ module.title }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
         </div>
     </aside>
 
@@ -245,6 +281,94 @@ body.light-mode .module-card-summary {
     .modules-grid {
         grid-template-columns: 1fr;
     }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ────── TOGGLE DE CATEGORÍAS ──────
+  const categoryToggles = document.querySelectorAll('.sidebar-category-toggle');
+  
+  categoryToggles.forEach(toggle => {
+    const categoryKey = toggle.dataset.category;
+    const modulesList = document.querySelector(`.sidebar-modules[data-category="${categoryKey}"]`);
+    
+    // Expandir la primera categoría por defecto
+    if (toggle === categoryToggles[0]) {
+      modulesList.classList.add('open');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+    
+    toggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      const isOpen = modulesList.classList.contains('open');
+      
+      // Cerrar otras categorías
+      categoryToggles.forEach(t => {
+        if (t !== toggle) {
+          const key = t.dataset.category;
+          const list = document.querySelector(`.sidebar-modules[data-category="${key}"]`);
+          list.classList.remove('open');
+          t.setAttribute('aria-expanded', 'false');
+        }
+      });
+      
+      // Toggle la actual
+      modulesList.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+    });
+  });
+
+  // ────── BUSCADOR DE MÓDULOS ──────
+  const searchInput = document.getElementById('moduleSearch');
+  const categoryFilter = document.getElementById('categoryFilter');
+  
+  function filterModules() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedCategory = categoryFilter.value;
+    const moduleLinks = document.querySelectorAll('.sidebar-module-link');
+    
+    moduleLinks.forEach(link => {
+      const title = link.textContent.toLowerCase();
+      const category = link.dataset.category;
+      
+      const matchesSearch = searchTerm === '' || title.includes(searchTerm);
+      const matchesCategory = selectedCategory === '' || category === selectedCategory;
+      
+      if (matchesSearch && matchesCategory) {
+        link.parentElement.style.display = 'block';
+      } else {
+        link.parentElement.style.display = 'none';
+      }
+    });
+  }
+  
+  searchInput.addEventListener('input', filterModules);
+  categoryFilter.addEventListener('change', filterModules);
+});
+</script>
+
+<style>
+/* Mejorar la apariencia del select en diferentes navegadores */
+.filter-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(139, 92, 246, 0.5)' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 1.2em 1.2em;
+  padding-right: 2.5rem;
+}
+
+.filter-select option {
+  background: #0a0e27;
+  color: #f3f4f6;
+}
+
+body.light-mode .filter-select option {
+  background: #ffffff;
+  color: #1f2937;
 }
 </style>
 {% endblock %}
