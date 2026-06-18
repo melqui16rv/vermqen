@@ -63,7 +63,7 @@ final class PageController
         return $this->twig->render($response, 'pages/home.twig', [
             'pageTitle'         => 'Wiki del proyecto',
             'currentSlug'       => null,
-            'navigation'        => $this->buildNavigation($basePath, null, $queryMode),
+            'navigation'        => array_slice($this->buildNavigation($basePath, null, $queryMode), 0, 1),
             'modules'           => $modules,
             'categories'        => array_values($categories),
             'legacyPath'        => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
@@ -123,18 +123,31 @@ final class PageController
         $queryMode   = $this->useQueryRouting($request);
 
         $categoryModules = [];
+        $categories = [];
+        
         foreach ($this->contentRepository->allModules() as $slug => $module) {
-            if ((string)($module['category'] ?? 'general') !== $categoryKey) {
-                continue;
-            }
-
-            $categoryModules[] = [
+            $catKey = (string)($module['category'] ?? 'general');
+            
+            $moduleData = [
                 'slug'    => $slug,
                 'title'   => $module['title'] ?? $slug,
                 'summary' => $module['summary'] ?? '',
                 'tag'     => $module['tag'] ?? 'Documentación',
-                'path'    => $this->routePath($basePath, '/' . $categoryKey . '/' . $slug, $queryMode),
+                'path'    => $this->routePath($basePath, '/' . $catKey . '/' . $slug, $queryMode),
             ];
+            
+            if ($catKey === $categoryKey) {
+                $categoryModules[] = $moduleData;
+            }
+            
+            if (!isset($categories[$catKey])) {
+                $categories[$catKey] = [
+                    'key'     => $catKey,
+                    'label'   => $this->categoryLabel($catKey),
+                    'modules' => [],
+                ];
+            }
+            $categories[$catKey]['modules'][] = $moduleData;
         }
 
         if ($categoryModules === []) {
@@ -154,6 +167,7 @@ final class PageController
             'categoryKey'  => $categoryKey,
             'categoryLabel' => $this->categoryLabel($categoryKey),
             'modules'      => $categoryModules,
+            'categories'   => array_values($categories),
             'homePath'     => $this->routePath($basePath, '/', $queryMode),
             'assetBase'    => $this->assetBase($basePath),
         ]);
