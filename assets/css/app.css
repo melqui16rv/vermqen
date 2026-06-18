@@ -1194,6 +1194,42 @@ body.light-mode .sidebar-module-link:hover {
   transform: translateX(6px);
 }
 
+body.light-mode .filter-picker-button {
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+body.light-mode .filter-picker-button:hover,
+body.light-mode .filter-picker-button[aria-expanded="true"] {
+  background: #faf5ff;
+  border-color: #8b5cf6;
+}
+
+body.light-mode .filter-picker-icon {
+  color: #7c3aed;
+}
+
+body.light-mode .filter-picker-menu {
+  background: #ffffff;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .filter-picker-option {
+  color: #1f2937;
+}
+
+body.light-mode .filter-picker-option:hover {
+  background: rgba(139, 92, 246, 0.08);
+  color: #111827;
+}
+
+body.light-mode .filter-picker-option.is-selected {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: white;
+}
 /* Light mode */
 body.light-mode .category-card-inner {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(236, 72, 153, 0.04));
