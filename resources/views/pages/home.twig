@@ -48,7 +48,7 @@
               <span class="category-title">{{ category.label }}</span>
               <i class="bi bi-chevron-down toggle-icon"></i>
             </button>
-            <ul class="sidebar-modules" data-category="{{ category.key }}" style="max-height: 0;">
+            <ul class="sidebar-modules" data-category="{{ category.key }}">
               {% for module in category.modules %}
                 <li class="sidebar-module-item">
                   <a href="{{ module.path }}" class="sidebar-module-link" data-category="{{ category.key }}" title="{{ module.title }}">

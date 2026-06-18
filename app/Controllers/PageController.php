@@ -63,7 +63,7 @@ final class PageController
         return $this->twig->render($response, 'pages/home.twig', [
             'pageTitle'         => 'Wiki del proyecto',
             'currentSlug'       => null,
-            'navigation'        => $this->buildNavigation($basePath, null, $queryMode),
+            'navigation'        => array_slice($this->buildNavigation($basePath, null, $queryMode), 0, 1),
             'modules'           => $modules,
             'categories'        => array_values($categories),
             'legacyPath'        => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),

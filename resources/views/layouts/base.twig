@@ -14,6 +14,12 @@
     <link href="{{ assetBase }}/assets/css/app.css" rel="stylesheet">
 </head>
 <body class="wiki-body">
+    <div class="page-loader" aria-hidden="true">
+        <div class="loader-mark">
+            <span class="loader-dot"></span>
+            <span class="loader-text">APP-CIDE</span>
+        </div>
+    </div>
     <div class="bg-orb bg-orb-a"></div>
     <div class="bg-orb bg-orb-b"></div>
     <div class="bg-grid"></div>
@@ -27,32 +33,18 @@
                         <span class="brand-title">APP-CIDE</span>
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#wikiNav" aria-controls="wikiNav" aria-expanded="false" aria-label="Navegación">
-                        <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="collapse navbar-collapse" id="wikiNav">
+                    <div class="navbar-actions ms-auto" id="wikiNav">
                         <ul class="navbar-nav ms-auto gap-lg-1 align-items-center">
+                            <li class="nav-item">
+                                <a class="nav-link rounded-pill px-3 {{ currentSlug is null ? 'active' : '' }}" href="{{ navigation[0].path }}">Inicio</a>
+                            </li>
                             <li class="nav-item me-2">
                                 <button type="button" class="btn btn-outline-light btn-sm theme-toggle" onclick="window.toggleTheme()" aria-label="Alternar modo claro/oscuro">
                                     <i class="bi bi-sun-fill theme-icon-light"></i>
                                     <i class="bi bi-moon-fill theme-icon-dark"></i>
                                 </button>
                             </li>
-                            {% for item in navigation %}
-                                {% if item.type == 'dropdown' %}
-                                    <li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle rounded-pill px-3 {{ item.active ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ item.label }}</a>
-                                        <ul class="dropdown-menu dropdown-menu-dark border border-dark-subtle shadow">
-                                            {% for sub in item.items %}
-                                                <li><a class="dropdown-item rounded-1 {{ sub.active ? 'active' : '' }}" href="{{ sub.path }}">{{ sub.label }}</a></li>
-                                            {% endfor %}
-                                        </ul>
-                                    </li>
-                                {% else %}
-                                    <li class="nav-item">
-                                        <a class="nav-link rounded-pill px-3 {{ item.active ? 'active' : '' }}" href="{{ item.path }}">{{ item.label }}</a>
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
                         </ul>
                     </div>
                 </div>
