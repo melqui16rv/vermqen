@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 return [
@@ -23,8 +24,8 @@ return [
         'term' => 'Stream & Chunk',
         'definition' => 'Técnicas para procesar información por fragmentos pequeños (chunks) en lugar de cargar todo el archivo en la RAM.',
         'sub_terms' => [
-            'Stream' => 'Flujo de datos continuo.',
-            'Chunk' => 'Porción pequeña de un bloque de datos.'
+            'Stream' => 'Flujo de datos: técnica que transfiere información de forma continua en pedazos pequeños.',
+            'Chunk' => 'Fragmento o pedazo: porción pequeña de un bloque de datos que se procesa, transfiere o almacena de forma individual.'
         ]
     ],
     'dns_resolver' => [
@@ -38,5 +39,29 @@ return [
     'blade' => [
         'term' => 'Blade',
         'definition' => 'Motor de plantillas simple pero potente integrado en Laravel.'
-    ]
+    ],
+    'abstraccion' => [
+        'term' => 'Abstracción',
+        'definition' => 'Concepto que oculta los detalles técnicos subyacentes de dónde y cómo se procesan o guardan los datos.'
+    ],
+    'bd' => [
+        'term' => 'BD (Base de Datos)',
+        'definition' => 'Acrónimo de Base de Datos; conjunto organizado de información estructurada.'
+    ],
+    'name_server' => [
+        'term' => 'Name Server',
+        'definition' => 'Servidor web configurado específicamente para alojar y gestionar los registros DNS de un nombre de dominio.'
+    ],
+    'tailwind' => [
+        'term' => 'Tailwind CSS',
+        'definition' => 'Framework de diseño para desarrollo web que se basa en el concepto de clases de utilidad.'
+    ],
+    'backend' => [
+        'term' => 'Backend',
+        'definition' => 'Parte de una aplicación o sitio web que corre detrás de escena en un servidor; el motor o cerebro de la aplicación.'
+    ],
+    'pivot_model' => [
+        'term' => 'Modelo Pivote',
+        'definition' => 'Tabla intermedia utilizada para conectar dos tablas principales que tienen una relación de muchos a muchos (Many-to-Many).'
+    ],
 ];
