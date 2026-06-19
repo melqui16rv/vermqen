@@ -9,14 +9,14 @@ return [
     'nav'              => 'Completar Info',
     'title'            => 'Sistema de Completar Información',
     'tag'              => 'Gestión Curricular',
-    'summary'          => 'Herramienta de detección y gestión de campos faltantes en diseños, competencias y RAPs.',
+    'summary'          => 'Herramienta de detección y gestión de campos faltantes en diseños, competencias y RAPs "Resultados de Aprendizaje" .',
     'intro'            => 'Funcionalidad integral que replica la lógica de validación legacy para asegurar la calidad de los datos curriculares. Permite identificar registros incompletos, visualizar campos obligatorios faltantes y gestionar su actualización mediante una interfaz intuitiva.',
     
     'features'         => [
         [
             'icon'  => 'bi-search',
             'title' => 'Detección Inteligente',
-            'text'  => 'Identificación automática de campos obligatorios faltantes en Diseños, Competencias y RAPs.',
+            'text'  => 'Identificación automática de campos obligatorios faltantes en Diseños, Competencias y RAPs"Resultados de Aprendizaje" .',
         ],
         [
             'icon'  => 'bi-speedometer2',

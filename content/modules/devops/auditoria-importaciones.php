@@ -1,7 +1,5 @@
 <?php
-
 declare(strict_types=1);
-
 return [
     'category'         => 'devops',
     'category_label'   => 'DevOps & Entorno',
@@ -27,6 +25,7 @@ return [
             'title' => 'Detección de integridad',
             'text'  => 'Clasificación de resultados (SUCCESS|PARTIAL|FAILED) con desglose de errores en JSON.',
         ],
+        
     ],
     'workflow'         => [
         [
@@ -50,6 +49,15 @@ return [
             'command' => 'Logger::persist(tipo, resultado, detalles)',
         ],
     ],
+    'glossary'         => [
+        'title'    => 'Conceptos Clave',
+        'terms'    => [
+            ['term' => 'CDP (Certificado de Disponibilidad Presupuestal)', 'definition' => 'Documento que garantiza que la entidad cuenta con recursos presupuestales disponibles y libres de afectación para realizar un gasto o iniciar una contratación.'],
+            ['term' => 'CRP (Certificado de Registro Presupuestal)', 'definition' => 'Documento que ampara los recursos una vez se firma el contrato o se adquiere la obligación, garantizando que ese dinero ya no podrá destinarse a otro fin.'],
+            ['term' => 'OP (Orden de Pago)', 'definition' => 'Documento emitido una vez recibido el bien o servicio a satisfacción, que autoriza a tesorería a girar o pagar al contratista o proveedor.'],
+        ],
+        'relation' => 'Los tres documentos conforman la cadena presupuestal del gasto público: primero el CDP reserva el presupuesto disponible, luego el CRP compromete esos recursos al formalizarse el contrato, y finalmente la OP autoriza el pago una vez se cumple con la entrega del bien o servicio.'
+    ],
     'checklist'        => [
         'Se normalizaron fechas y números para evitar falsos positivos en el conteo de cambios.',
         'Se verificó que el hash SHA-256 se genere correctamente para detección de archivos repetidos.',
@@ -66,5 +74,5 @@ return [
             'label' => 'Monitoreo de Cargas Masivas',
             'url'   => '',
         ],
-    ],
+    ], 
 ];

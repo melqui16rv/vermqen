@@ -1,0 +1,27 @@
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+<div x-data="{ search: '' }" class="container-fluid" data-aos="fade-up">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 fw-bold mb-0">Glosario de términos</h1>
+        <a href="/" class="btn btn-link text-secondary">Volver al inicio</a>
+    </div>
+
+    {# Buscador Alpine.js #}
+    <div class="mb-4">
+        <input x-model="search" type="text" placeholder="Filtrar términos..." 
+               class="form-control bg-dark text-white border-secondary shadow-none">
+    </div>
+
+    <div class="row g-3">
+        {% for key, item in glossary %}
+        <div class="col-md-6" x-show="'{{ item.term|lower }}'.includes(search.toLowerCase())">
+            <article class="glass-panel p-3 h-100">
+                <h5 class="text-primary mb-2">{{ item.term }}</h5>
+                <p class="text-secondary small mb-0">{{ item.definition }}</p>
+            </article>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

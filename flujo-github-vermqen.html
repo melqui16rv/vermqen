@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flujo de Trabajo GitHub · VERMQEN</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161e;
+    --bg3: #1a1e28;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --purple: #8b5cf6;
+    --purple-light: #c4b5fd;
+    --teal: #14b8a6;
+    --teal-light: #5eead4;
+    --amber: #f59e0b;
+    --amber-light: #fcd34d;
+    --blue: #3b82f6;
+    --blue-light: #93c5fd;
+    --coral: #f97316;
+    --coral-light: #fdba74;
+    --green: #22c55e;
+    --green-light: #86efac;
+    --red: #ef4444;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Sora', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: -60px;
+    width: 340px; height: 340px;
+    background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(20,184,166,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 0.5rem;
+  }
+  header h1 span { color: var(--purple-light); }
+  header p {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 520px;
+  }
+  .header-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .meta-chip {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── NAV TABS ── */
+  nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0 3rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 1rem 1.25rem;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--purple-light); border-color: var(--purple); }
+
+  /* ── SECTIONS ── */
+  .section { display: none; padding: 2.5rem 3rem; }
+  .section.active { display: block; }
+  .section-title {
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 0.2em;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 1.75rem;
+  }
+
+  /* ── GLOSSARY ── */
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .gterm {
+    background: var(--bg2);
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .gterm:hover { background: var(--bg3); }
+  .gterm-word {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--purple-light);
+    margin-bottom: 2px;
+  }
+  .gterm-pron {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 6px;
+    font-family: var(--mono);
+  }
+  .gterm-es {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--teal-light);
+    margin-bottom: 6px;
+  }
+  .gterm-desc {
+    font-size: 13px;
+    color: #9ca3af;
+    line-height: 1.5;
+  }
+  .gterm-expand {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .gterm.open .gterm-expand { max-height: 300px; }
+  .gterm-example {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    border-left: 3px solid var(--purple);
+    font-size: 12px;
+    color: #9ca3af;
+  }
+  .gterm-example strong { color: var(--purple-light); }
+  .gterm-toggle {
+    position: absolute;
+    top: 1.25rem; right: 1rem;
+    font-size: 16px;
+    color: var(--muted);
+    transition: transform 0.3s;
+  }
+  .gterm.open .gterm-toggle { transform: rotate(45deg); color: var(--purple-light); }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+  .flow-lane {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    position: relative;
+  }
+  .lane-label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 1rem 0.6rem;
+    border-right: 1px solid var(--border);
+    background: var(--bg);
+    min-width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lane-content {
+    flex: 1;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .branch-node {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    min-width: 140px;
+  }
+  .branch-node:hover { transform: translateY(-2px); }
+  .branch-node.purple { border-color: rgba(139,92,246,0.4); background: rgba(139,92,246,0.06); }
+  .branch-node.purple:hover { border-color: var(--purple); background: rgba(139,92,246,0.12); }
+  .branch-node.teal { border-color: rgba(20,184,166,0.4); background: rgba(20,184,166,0.06); }
+  .branch-node.teal:hover { border-color: var(--teal); background: rgba(20,184,166,0.12); }
+  .branch-node.amber { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.06); }
+  .branch-node.amber:hover { border-color: var(--amber); background: rgba(245,158,11,0.12); }
+  .branch-node.blue { border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.06); }
+  .branch-node.blue:hover { border-color: var(--blue); background: rgba(59,130,246,0.12); }
+  .node-name {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .branch-node.purple .node-name { color: var(--purple-light); }
+  .branch-node.teal .node-name { color: var(--teal-light); }
+  .branch-node.amber .node-name { color: var(--amber-light); }
+  .branch-node.blue .node-name { color: var(--blue-light); }
+  .node-desc { font-size: 11px; color: var(--muted); }
+  .node-badge {
+    position: absolute;
+    top: -8px; right: 8px;
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+  .badge-locked { background: rgba(139,92,246,0.2); color: var(--purple-light); border: 1px solid rgba(139,92,246,0.3); }
+  .badge-auto   { background: rgba(20,184,166,0.2); color: var(--teal-light); border: 1px solid rgba(20,184,166,0.3); }
+  .badge-hot    { background: rgba(245,158,11,0.2); color: var(--amber-light); border: 1px solid rgba(245,158,11,0.3); }
+
+  .arrow-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.4rem 1.5rem 0.4rem 3.5rem;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+  .arrow-line {
+    flex: 1;
+    max-width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--purple) 0%, transparent 100%);
+  }
+  .arrow-head { color: var(--purple); }
+
+  /* ── COMMANDS ── */
+  .commands-list { display: flex; flex-direction: column; gap: 1.5rem; }
+  .cmd-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .cmd-card:hover { border-color: var(--border2); }
+  .cmd-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    gap: 1rem;
+  }
+  .cmd-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .cmd-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .cmd-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .tag-green { background: rgba(34,197,94,0.15); color: var(--green-light); border: 1px solid rgba(34,197,94,0.2); }
+  .tag-blue  { background: rgba(59,130,246,0.15); color: var(--blue-light); border: 1px solid rgba(59,130,246,0.2); }
+  .tag-amber { background: rgba(245,158,11,0.15); color: var(--amber-light); border: 1px solid rgba(245,158,11,0.2); }
+  .tag-red   { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
+  .cmd-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+  .cmd-card.open .cmd-body { max-height: 900px; }
+  .cmd-inner { padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border); }
+  .cmd-step {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cmd-step:last-child { border-bottom: none; }
+  .cmd-step-label {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .cmd-step-desc {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  .code-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.9;
+    position: relative;
+    overflow-x: auto;
+  }
+  .code-block .comment { color: var(--muted); }
+  .code-block .cmd { color: var(--teal-light); }
+  .code-block .flag { color: var(--amber-light); }
+  .code-block .value { color: var(--purple-light); }
+  .code-block .branch { color: var(--blue-light); }
+  .copy-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border2);
+    background: var(--bg2);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--teal); }
+  .word-pill {
+    display: inline-block;
+    background: rgba(139,92,246,0.1);
+    border: 1px solid rgba(139,92,246,0.2);
+    color: var(--purple-light);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 2px;
+    cursor: pointer;
+  }
+  .word-pill:hover { background: rgba(139,92,246,0.2); }
+
+  /* ── SCENARIOS ── */
+  .scenario-list { display: flex; flex-direction: column; gap: 2rem; }
+  .scenario-card {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--bg2);
+  }
+  .scenario-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .scenario-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .num-purple { background: rgba(139,92,246,0.15); color: var(--purple-light); border: 1px solid rgba(139,92,246,0.3); }
+  .num-teal   { background: rgba(20,184,166,0.15); color: var(--teal-light); border: 1px solid rgba(20,184,166,0.3); }
+  .num-amber  { background: rgba(245,158,11,0.15); color: var(--amber-light); border: 1px solid rgba(245,158,11,0.3); }
+  .scenario-title { font-size: 15px; font-weight: 600; }
+  .scenario-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .scenario-steps { padding: 0 1.5rem; }
+  .sstep {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .sstep:last-child { border-bottom: none; }
+  .sstep-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .sstep-content {}
+  .sstep-who {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-bottom: 4px;
+    letter-spacing: 0.08em;
+  }
+  .sstep-action { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .sstep-code {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--teal-light);
+    line-height: 1.8;
+  }
+
+  /* ── TOOLTIP overlay ── */
+  #tooltip {
+    position: fixed;
+    background: var(--bg3);
+    border: 1px solid var(--purple);
+    border-radius: 10px;
+    padding: 12px 16px;
+    max-width: 280px;
+    font-size: 13px;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.2s;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  #tooltip.show { opacity: 1; transform: translateY(0); }
+  #tooltip .t-word { font-family: var(--mono); color: var(--purple-light); font-weight: 700; font-size: 12px; }
+  #tooltip .t-es { color: var(--teal-light); font-size: 12px; margin: 2px 0; }
+  #tooltip .t-pron { color: var(--muted); font-style: italic; font-size: 11px; font-family: var(--mono); }
+  #tooltip .t-def { color: #9ca3af; margin-top: 6px; font-size: 12px; line-height: 1.5; }
+
+  /* misc */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+  .info-box {
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 1.5rem 0;
+  }
+  .info-box strong { color: var(--blue-light); }
+
+  .roles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 1rem; margin-top: 1rem; }
+  .role-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .role-icon { font-size: 28px; margin-bottom: 8px; }
+  .role-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .role-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .role-perms { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .perm {
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 2px 7px;
+    border-radius: 20px;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  footer span { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+</style>
+</head>
+<body>
+
+<!-- TOOLTIP -->
+<div id="tooltip">
+  <div class="t-word" id="tt-word"></div>
+  <div class="t-pron" id="tt-pron"></div>
+  <div class="t-es" id="tt-es"></div>
+  <div class="t-def" id="tt-def"></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-label">// flujo de trabajo</div>
+  <h1>GitHub Workflow<br><span>VERMQEN · Laravel</span></h1>
+  <p>Guía práctica de cómo trabaja el equipo con GitHub. Sin tecnicismos innecesarios — todo explicado en español.</p>
+  <div class="header-meta">
+    <span class="meta-chip">3–7 personas</span>
+    <span class="meta-chip">Laravel + Vite</span>
+    <span class="meta-chip">5 submódulos</span>
+    <span class="meta-chip">v1.0 · 2025</span>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <div class="tab active" onclick="switchTab('glosario')">📖 Glosario</div>
+  <div class="tab" onclick="switchTab('flujo')">🔀 Flujo de ramas</div>
+  <div class="tab" onclick="switchTab('comandos')">💻 Comandos Git</div>
+  <div class="tab" onclick="switchTab('escenarios')">🎬 Escenarios reales</div>
+  <div class="tab" onclick="switchTab('roles')">👥 Roles del equipo</div>
+</nav>
+
+<!-- ════════════ GLOSARIO ════════════ -->
+<section class="section active" id="sec-glosario">
+  <p class="section-title">// términos técnicos explicados</p>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:1.5rem;">Haz clic en cualquier tarjeta para ver el ejemplo de uso. En toda la página, las <span class="word-pill" style="cursor:default">palabras en morado</span> son términos que puedes buscar aquí.</p>
+  <div class="glossary-grid" id="glossary"></div>
+</section>
+
+<!-- ════════════ FLUJO DE RAMAS ════════════ -->
+<section class="section" id="sec-flujo">
+  <p class="section-title">// cómo se organizan los cambios</p>
+  <div class="info-box">
+    <strong>Idea central:</strong> En Git nunca trabajas directo en el código de producción. Primero haces una copia (rama), ahí experimentas, y cuando está listo pides permiso para integrarlo. Así el código de producción <strong>siempre funciona</strong>.
+  </div>
+  <div class="flow-wrapper" id="flow-diagram"></div>
+</section>
+
+<!-- ════════════ COMANDOS ════════════ -->
+<section class="section" id="sec-comandos">
+  <p class="section-title">// comandos git explicados palabra por palabra</p>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:1.5rem;">Haz clic en cada tarjeta para ver los comandos con explicación de cada parte.</p>
+  <div class="commands-list" id="commands-list"></div>
+</section>
+
+<!-- ════════════ ESCENARIOS ════════════ -->
+<section class="section" id="sec-escenarios">
+  <p class="section-title">// situaciones reales del proyecto</p>
+  <div class="scenario-list" id="scenarios-list"></div>
+</section>
+
+<!-- ════════════ ROLES ════════════ -->
+<section class="section" id="sec-roles">
+  <p class="section-title">// quién hace qué</p>
+  <div class="info-box">
+    <strong>Para equipos de 3–7 personas:</strong> no todas las personas deben tener el mismo nivel de acceso. GitHub permite controlar quién puede aprobar cambios y quién puede hacer deploy.
+  </div>
+  <div class="roles-grid" id="roles-grid"></div>
+
+  <h3 style="margin-top:2.5rem;font-size:14px;font-weight:600;color:var(--text);margin-bottom:1rem;">¿Cómo configuro esto en GitHub?</h3>
+  <div class="info-box" style="border-color:rgba(139,92,246,0.3);background:rgba(139,92,246,0.05);">
+    <strong style="color:var(--purple-light);">Settings → Branches → Add branch protection rule</strong><br><br>
+    Para <strong style="color:var(--purple-light);">main</strong>: activar "Require pull request reviews" → mínimo 2. Activar "Require status checks to pass" → seleccionar el CI. Activar "Restrict who can push".<br><br>
+    Para <strong style="color:var(--teal-light);">staging</strong>: igual pero con 1 aprobación.<br><br>
+    Para <strong style="color:var(--teal-light);">develop</strong>: "Require pull request reviews" → 1. El CI obligatorio.
+  </div>
+</section>
+
+<footer>
+  <span>VERMQEN · Flujo de trabajo GitHub</span>
+  <span>Haz clic en cualquier término para más info</span>
+</footer>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+const glossary = [
+  {
+    word: "Repository",
+    pron: "/re-po-si-to-ri/",
+    es: "Repositorio",
+    short: "La carpeta del proyecto guardada en GitHub con todo el historial.",
+    example: "El repositorio de VERMQEN está en <strong>github.com/tu-org/vermqen-laravel</strong>. Ahí vive todo el código con su historia completa."
+  },
+  {
+    word: "Branch",
+    pron: "/branch/",
+    es: "Rama",
+    short: "Una copia paralela del código donde trabajas sin afectar el original.",
+    example: "Si quieres agregar la exportación de PDFs en Presupuesto, creas la rama <strong>feature/pres-export-pdf</strong>. El código original sigue intacto."
+  },
+  {
+    word: "Commit",
+    pron: "/ko-mit/",
+    es: "Confirmación / Guardado",
+    short: "Un punto de guardado en la historia del proyecto. Como un checkpoint.",
+    example: "<strong>git commit -m 'Agrega filtro por fecha en CDP'</strong> — guarda ese cambio con un mensaje descriptivo."
+  },
+  {
+    word: "Push",
+    pron: "/push/",
+    es: "Empujar / Subir",
+    short: "Enviar tus commits locales (en tu computador) a GitHub.",
+    example: "Trabajas en tu computador, haces commits, y al final del día haces <strong>git push</strong> para que el equipo vea tu trabajo en GitHub."
+  },
+  {
+    word: "Pull",
+    pron: "/pul/",
+    es: "Jalar / Bajar",
+    short: "Descargar los cambios que otros del equipo han subido a GitHub.",
+    example: "Llegaste al trabajo, alguien subió cambios anoche. Haces <strong>git pull</strong> para tener la versión más reciente."
+  },
+  {
+    word: "Pull Request (PR)",
+    pron: "/pul ri-kwest/",
+    es: "Solicitud de integración",
+    short: "Un pedido formal para mezclar tu rama con otra. El equipo lo revisa antes de aprobar.",
+    example: "Terminaste la funcionalidad de viáticos. Abres un PR en GitHub para que el Tech Lead revise el código antes de pasarlo a develop."
+  },
+  {
+    word: "Merge",
+    pron: "/merch/",
+    es: "Fusionar / Mezclar",
+    short: "Combinar los cambios de dos ramas en una sola.",
+    example: "Cuando el PR es aprobado, se hace <strong>merge</strong>: el código de tu rama se integra a develop."
+  },
+  {
+    word: "Clone",
+    pron: "/kloun/",
+    es: "Clonar / Copiar",
+    short: "Descargar todo el repositorio de GitHub a tu computador por primera vez.",
+    example: "<strong>git clone https://github.com/tu-org/vermqen-laravel.git</strong> — descarga el proyecto completo con toda su historia."
+  },
+  {
+    word: "Staging",
+    pron: "/stei-ying/",
+    es: "Ambiente de pruebas / Pre-producción",
+    short: "Un servidor idéntico a producción donde se prueba todo antes de que usuarios reales lo vean.",
+    example: "Antes de publicar el módulo de Gestor Curricular, lo ponen en staging para que el cliente o QA lo revise sin riesgo."
+  },
+  {
+    word: "QA",
+    pron: "/kiu-ei/",
+    es: "Control de calidad (Quality Assurance)",
+    short: "La persona o proceso que revisa que todo funcione antes de publicar.",
+    example: "El QA entra al ambiente de staging y prueba el módulo de ingreso/salida: registra personas, busca errores, verifica los reportes."
+  },
+  {
+    word: "Deploy",
+    pron: "/di-ploi/",
+    es: "Desplegar / Publicar",
+    short: "Poner la nueva versión del código en el servidor para que los usuarios lo usen.",
+    example: "Se aprobaron todos los cambios → se hace <strong>deploy</strong> a producción → los usuarios ya ven la nueva versión."
+  },
+  {
+    word: "CI/CD",
+    pron: "/si-ai si-di/",
+    es: "Integración y entrega continua",
+    short: "Robots automáticos que corren pruebas y publican el código sin intervención humana.",
+    example: "Cuando subes código, GitHub Actions automáticamente corre los tests de PHP, verifica el estilo del código, y si todo pasa, hace deploy a staging."
+  },
+  {
+    word: "Hotfix",
+    pron: "/jot-fix/",
+    es: "Parche urgente",
+    short: "Un arreglo rápido a un bug crítico en producción que no puede esperar el ciclo normal.",
+    example: "El módulo de presupuesto cae el lunes por un error. Creas <strong>hotfix/pres-calculo-error</strong>, lo arreglas, y lo subes directamente a main."
+  },
+  {
+    word: "Checkout",
+    pron: "/chek-aut/",
+    es: "Cambiar a / Moverse a",
+    short: "Cambiarte a otra rama o versión del código.",
+    example: "<strong>git checkout develop</strong> — te mueves a la rama develop. Tu carpeta de código cambia para mostrar esa versión."
+  },
+  {
+    word: "ESLint",
+    pron: "/i-es-lint/",
+    es: "Verificador de JavaScript",
+    short: "Una herramienta automática que revisa errores de estilo y calidad en el código JavaScript.",
+    example: "Antes de subir código, ESLint revisa que no hayas dejado console.log() olvidados, variables sin usar o errores de formato."
+  },
+  {
+    word: "Pint",
+    pron: "/pint/",
+    es: "Formateador de PHP (Laravel Pint)",
+    short: "La herramienta oficial de Laravel para formatear el código PHP automáticamente.",
+    example: "<strong>./vendor/bin/pint</strong> — arregla automáticamente la indentación, espacios y estilo de todo tu código PHP."
+  },
+  {
+    word: "PHPUnit / Pest",
+    pron: "/pi-eich-pi-iu-nit / pest/",
+    es: "Frameworks de pruebas automatizadas para PHP",
+    short: "Herramientas que ejecutan pruebas automáticas para verificar que el código funciona correctamente.",
+    example: "Antes de hacer merge, el CI corre Pest y verifica que el cálculo del CDP sigue siendo correcto, que el login funciona, etc."
+  },
+  {
+    word: "Squash merge",
+    pron: "/skuash merch/",
+    es: "Fusión comprimida",
+    short: "Combinar todos los commits de una rama en uno solo, para mantener el historial limpio.",
+    example: "Tu rama feature tiene 12 commits de prueba. Con squash merge, llegan a develop como 1 solo commit limpio: 'Agrega módulo de viáticos'."
+  },
+  {
+    word: "Conflict",
+    pron: "/kon-flikt/",
+    es: "Conflicto de código",
+    short: "Cuando dos personas modificaron el mismo archivo y Git no sabe cuál versión usar.",
+    example: "Tú y tu compañero editaron <strong>web.php</strong> a la vez. Git marca el conflicto y deben decidir manualmente qué líneas quedan."
+  },
+  {
+    word: "README",
+    pron: "/rid-mi/",
+    es: "Léeme / Documentación principal",
+    short: "Archivo de texto que explica qué es el proyecto, cómo instalarlo y cómo usarlo.",
+    example: "El README.md del proyecto debería tener: cómo instalar Laravel, cómo configurar el .env, y cómo correr las migraciones."
+  }
+];
+
+const flowLanes = [
+  {
+    label: "Producción",
+    color: "purple",
+    nodes: [
+      { name: "main", desc: "Código en vivo · usuarios reales", badge: "🔒 protegida", badgeClass: "badge-locked" }
+    ],
+    note: "Solo recibe cambios desde staging (por PR) o desde hotfix. Nunca se edita directamente."
+  },
+  {
+    label: "Pre-producción",
+    color: "purple",
+    nodes: [
+      { name: "staging", desc: "Aquí el QA prueba todo", badge: "🔒 protegida", badgeClass: "badge-locked" }
+    ],
+    note: "Recibe cambios desde develop cuando el equipo dice 'esto está listo para revisar'."
+  },
+  {
+    label: "Integración",
+    color: "teal",
+    nodes: [
+      { name: "develop", desc: "Donde se juntan todos los cambios", badge: "⚡ auto-build", badgeClass: "badge-auto" }
+    ],
+    note: "La rama central de trabajo. Cada feature terminado entra aquí mediante PR."
+  },
+  {
+    label: "Trabajo diario",
+    color: "blue",
+    nodes: [
+      { name: "feature/pres-cdp-filtro", desc: "Desarrollador 1" },
+      { name: "feature/gc-rap-paginacion", desc: "Desarrollador 2" },
+      { name: "feature/cv-ficha-pdf", desc: "Desarrollador 3" }
+    ],
+    note: "Cada persona trabaja en su propia rama. Los nombres indican el módulo: pres=presupuesto, gc=gestor curricular, cv=ciudad verde."
+  },
+  {
+    label: "Urgencias",
+    color: "amber",
+    nodes: [
+      { name: "hotfix/bug-critico", desc: "Sale de main · entra a main + develop", badge: "🚨 urgente", badgeClass: "badge-hot" }
+    ],
+    note: "Solo para bugs críticos en producción. Sale de main, se arregla, y se integra tanto a main como a develop."
+  }
+];
+
+const commands = [
+  {
+    title: "Empezar a trabajar en una nueva funcionalidad",
+    subtitle: "Crear tu rama de trabajo personal",
+    tag: "tag-green", tagText: "primeros pasos",
+    steps: [
+      {
+        label: "1. Traer los últimos cambios de develop",
+        desc: "Antes de crear tu rama, asegúrate de tener la versión más reciente del código de tu equipo.",
+        code: `<span class="comment"># Cambiar a la rama develop</span>
+<span class="cmd">git</span> <span class="flag">checkout</span> <span class="branch">develop</span>
+
+<span class="comment"># Descargar los últimos cambios de GitHub</span>
+<span class="cmd">git</span> <span class="flag">pull</span> <span class="value">origin</span> <span class="branch">develop</span>`,
+        explain: "git = programa de control de versiones | checkout = cambiarme a | pull = descargar | origin = el servidor GitHub | develop = nombre de la rama"
+      },
+      {
+        label: "2. Crear tu rama de trabajo",
+        desc: "Ahora creas tu copia personal donde harás los cambios. El nombre debe indicar el módulo y qué hace.",
+        code: `<span class="comment"># Crear la rama Y cambiarme a ella al mismo tiempo</span>
+<span class="cmd">git</span> <span class="flag">checkout</span> <span class="value">-b</span> <span class="branch">feature/pres-cdp-filtro-fecha</span>
+
+<span class="comment"># Estructura del nombre:</span>
+<span class="comment"># feature/ = nueva funcionalidad</span>
+<span class="comment"># pres     = módulo presupuesto</span>
+<span class="comment"># cdp-filtro-fecha = descripción breve</span>`,
+        explain: "-b = crear nueva (b de branch/rama)"
+      }
+    ]
+  },
+  {
+    title: "Guardar tu trabajo mientras programas",
+    subtitle: "Commits: los checkpoints de tu trabajo",
+    tag: "tag-blue", tagText: "trabajo diario",
+    steps: [
+      {
+        label: "1. Ver qué archivos cambiaste",
+        desc: "Antes de guardar, revisa qué archivos modificaste.",
+        code: `<span class="cmd">git</span> <span class="flag">status</span>
+
+<span class="comment"># Verás algo así:</span>
+<span class="comment"># modified: app/Http/Controllers/Presupuesto/CdpController.php</span>
+<span class="comment"># modified: resources/views/presupuesto/cdp/index.blade.php</span>`,
+        explain: "status = estado. Te dice qué cambió, qué está listo para guardar, qué no."
+      },
+      {
+        label: "2. Seleccionar qué guardar",
+        desc: "Con 'add' le dices a Git qué cambios quieres incluir en el próximo guardado.",
+        code: `<span class="comment"># Agregar un archivo específico</span>
+<span class="cmd">git</span> <span class="flag">add</span> <span class="value">app/Http/Controllers/Presupuesto/CdpController.php</span>
+
+<span class="comment"># O agregar TODOS los archivos cambiados</span>
+<span class="cmd">git</span> <span class="flag">add</span> <span class="value">.</span>
+<span class="comment"># El punto (.) significa "todo"</span>`,
+        explain: "add = agregar al área de preparación (staging area)"
+      },
+      {
+        label: "3. Crear el checkpoint (commit)",
+        desc: "Guarda los cambios con un mensaje descriptivo. El mensaje debe decir QUÉ cambiaste, no CÓMO.",
+        code: `<span class="cmd">git</span> <span class="flag">commit</span> <span class="value">-m</span> <span class="branch">"Agrega filtro por fecha en listado de CDP"</span>
+
+<span class="comment"># ✅ Buenos mensajes:</span>
+<span class="comment"># "Agrega exportación PDF en viáticos"</span>
+<span class="comment"># "Corrige cálculo total en orden de pago"</span>
+<span class="comment"># "Actualiza validación de campos en RAP"</span>
+
+<span class="comment"># ❌ Malos mensajes:</span>
+<span class="comment"># "cambios" / "fix" / "asdfgh"</span>`,
+        explain: "commit = guardar punto de control | -m = message (mensaje) | Las comillas contienen el mensaje"
+      },
+      {
+        label: "4. Subir tu trabajo a GitHub",
+        desc: "Tus commits están solo en tu computador. El push los sube a GitHub para que el equipo los vea.",
+        code: `<span class="cmd">git</span> <span class="flag">push</span> <span class="value">origin</span> <span class="branch">feature/pres-cdp-filtro-fecha</span>
+
+<span class="comment"># La primera vez puede pedir usuario/contraseña</span>
+<span class="comment"># origin = el servidor de GitHub</span>
+<span class="comment"># Al final va el nombre de TU rama</span>`,
+        explain: "push = empujar/subir | origin = el repositorio en GitHub"
+      }
+    ]
+  },
+  {
+    title: "Pedir que tu código entre a develop (Pull Request)",
+    subtitle: "Cuando terminaste tu funcionalidad",
+    tag: "tag-blue", tagText: "integracion",
+    steps: [
+      {
+        label: "1. Subir tu rama a GitHub",
+        desc: "Si no lo has hecho, sube tu rama.",
+        code: `<span class="cmd">git</span> <span class="flag">push</span> <span class="value">origin</span> <span class="branch">feature/pres-cdp-filtro-fecha</span>`,
+        explain: ""
+      },
+      {
+        label: "2. Crear el Pull Request en GitHub",
+        desc: "Esto se hace en el navegador, en github.com. GitHub te mostrará un botón 'Compare & pull request' al detectar tu nueva rama.",
+        code: `<span class="comment"># En github.com:</span>
+<span class="comment"># 1. Abrir el repositorio</span>
+<span class="comment"># 2. Clic en "Compare & pull request"</span>
+<span class="comment"># 3. Asegurarse que dice:</span>
+<span class="comment">#    base: develop  ← hacia donde va</span>
+<span class="comment">#    compare: feature/tu-rama  ← tu trabajo</span>
+<span class="comment"># 4. Escribir descripción de qué cambiaste</span>
+<span class="comment"># 5. Asignar a un reviewer (revisor)</span>
+<span class="comment"># 6. Clic en "Create pull request"</span>`,
+        explain: "Pull Request = solicitud formal para que tu código entre a otra rama"
+      }
+    ]
+  },
+  {
+    title: "Traer cambios que hicieron tus compañeros",
+    subtitle: "Mantener tu rama actualizada",
+    tag: "tag-amber", tagText: "sincronizacion",
+    steps: [
+      {
+        label: "Actualizar tu rama con los últimos cambios de develop",
+        desc: "Si llevas varios días en tu rama, develop puede haber avanzado. Es buena práctica traer esos cambios a tu rama periódicamente para evitar conflictos grandes al final.",
+        code: `<span class="comment"># Asegúrate de estar en tu rama</span>
+<span class="cmd">git</span> <span class="flag">checkout</span> <span class="branch">feature/pres-cdp-filtro-fecha</span>
+
+<span class="comment"># Trae los últimos cambios de develop a tu rama</span>
+<span class="cmd">git</span> <span class="flag">merge</span> <span class="value">origin/develop</span>
+
+<span class="comment"># Si hay conflictos, Git te avisa.</span>
+<span class="comment"># Abre los archivos marcados y elige</span>
+<span class="comment"># qué código queda. Luego:</span>
+<span class="cmd">git</span> <span class="flag">add</span> <span class="value">.</span>
+<span class="cmd">git</span> <span class="flag">commit</span> <span class="value">-m</span> <span class="branch">"Merge develop en feature rama"</span>`,
+        explain: "merge = fusionar/mezclar | origin/develop = la versión en GitHub de develop"
+      }
+    ]
+  },
+  {
+    title: "Arreglar un bug urgente en producción (Hotfix)",
+    subtitle: "Cuando algo se rompe y no puede esperar",
+    tag: "tag-red", tagText: "urgente",
+    steps: [
+      {
+        label: "1. Crear hotfix desde main",
+        desc: "El hotfix siempre sale de main (producción), no de develop, para asegurarte de arreglar exactamente lo que está roto.",
+        code: `<span class="comment"># Ir a main primero</span>
+<span class="cmd">git</span> <span class="flag">checkout</span> <span class="branch">main</span>
+<span class="cmd">git</span> <span class="flag">pull</span> <span class="value">origin</span> <span class="branch">main</span>
+
+<span class="comment"># Crear la rama de hotfix</span>
+<span class="cmd">git</span> <span class="flag">checkout</span> <span class="value">-b</span> <span class="branch">hotfix/pres-calculo-total</span>`,
+        explain: ""
+      },
+      {
+        label: "2. Arreglar el bug, hacer commit y subir",
+        desc: "Arregla solo el bug específico. Nada más.",
+        code: `<span class="comment"># Después de arreglar el código:</span>
+<span class="cmd">git</span> <span class="flag">add</span> <span class="value">.</span>
+<span class="cmd">git</span> <span class="flag">commit</span> <span class="value">-m</span> <span class="branch">"Corrige cálculo de total en orden de pago"</span>
+<span class="cmd">git</span> <span class="flag">push</span> <span class="value">origin</span> <span class="branch">hotfix/pres-calculo-total</span>`,
+        explain: ""
+      },
+      {
+        label: "3. Crear dos PRs: uno a main y uno a develop",
+        desc: "El hotfix debe entrar a producción (main) Y también a develop, para que develop no pierda la corrección.",
+        code: `<span class="comment"># En github.com crear 2 Pull Requests:</span>
+<span class="comment"># PR 1: hotfix/pres-calculo-total → main</span>
+<span class="comment"># PR 2: hotfix/pres-calculo-total → develop</span>
+<span class="comment"># Ambos deben ser aprobados y mergeados</span>`,
+        explain: ""
+      }
+    ]
+  }
+];
+
+const scenarios = [
+  {
+    color: "num-teal",
+    title: "Caso normal: agregar una nueva función",
+    subtitle: "Ej: Melqui agrega filtro de fechas en el módulo Presupuesto → CDP",
+    num: "01",
+    steps: [
+      { icon: "🧑‍💻", who: "Melqui (dev)", action: "Crea su rama de trabajo", code: "git checkout develop\ngit pull origin develop\ngit checkout -b feature/pres-cdp-filtro-fecha" },
+      { icon: "💾", who: "Melqui (dev)", action: "Programa, guarda sus cambios varias veces al día", code: 'git add .\ngit commit -m "Agrega input de fecha en formulario CDP"\ngit commit -m "Conecta filtro con controlador"' },
+      { icon: "☁️", who: "Melqui (dev)", action: "Sube su rama a GitHub al final del día", code: "git push origin feature/pres-cdp-filtro-fecha" },
+      { icon: "🔍", who: "Melqui (dev)", action: "Abre un Pull Request en github.com hacia develop", code: "En github.com → 'Compare & pull request'\nbase: develop ← compare: feature/pres-cdp-filtro-fecha" },
+      { icon: "✅", who: "Tech Lead (revisor)", action: "Revisa el código en GitHub, aprueba o pide cambios", code: "En github.com → Files changed → Review → Approve" },
+      { icon: "🔀", who: "Tech Lead", action: "Hace merge del PR a develop", code: "En github.com → Merge pull request → Squash and merge" },
+      { icon: "🗑️", who: "Cualquiera", action: "Borra la rama feature (ya no se necesita)", code: "git branch -d feature/pres-cdp-filtro-fecha\ngit push origin --delete feature/pres-cdp-filtro-fecha" }
+    ]
+  },
+  {
+    color: "num-purple",
+    title: "Publicar a producción (release)",
+    subtitle: "Cuando hay varias features listas en develop para publicar",
+    num: "02",
+    steps: [
+      { icon: "📋", who: "Tech Lead", action: "Decide que develop está listo para ir a staging", code: "git checkout develop\ngit pull origin develop" },
+      { icon: "🔀", who: "Tech Lead", action: "Abre PR de develop → staging en github.com", code: "En github.com → New pull request\nbase: staging ← compare: develop" },
+      { icon: "🧪", who: "QA / El equipo", action: "Prueba todo en el servidor de staging (pre-producción)", code: "# No hay comando git aquí\n# Se entra al servidor de pruebas y se revisa manualmente" },
+      { icon: "✅", who: "Tech Lead / Líder", action: "Aprueba el PR si todo está bien en staging", code: "En github.com → Review → Approve → Merge" },
+      { icon: "🔀", who: "Tech Lead", action: "Abre PR de staging → main", code: "En github.com → New pull request\nbase: main ← compare: staging" },
+      { icon: "🚀", who: "Tech Lead", action: "Aprueba y mergea → deploy automático a producción", code: "Merge pull request → GitHub Actions hace el deploy automático" }
+    ]
+  },
+  {
+    color: "num-amber",
+    title: "Bug urgente en producción",
+    subtitle: "Ej: Error en el cálculo de viáticos que afecta a todos los usuarios",
+    num: "03",
+    steps: [
+      { icon: "🚨", who: "Cualquier dev", action: "Crea rama hotfix desde main", code: "git checkout main\ngit pull origin main\ngit checkout -b hotfix/viaticos-calculo-error" },
+      { icon: "🔧", who: "Dev", action: "Arregla SOLO el bug específico", code: 'git add .\ngit commit -m "Corrige error en suma de viáticos"' },
+      { icon: "☁️", who: "Dev", action: "Sube el hotfix", code: "git push origin hotfix/viaticos-calculo-error" },
+      { icon: "⚡", who: "Tech Lead", action: "Aprueba y mergea a main (producción) con urgencia", code: "PR: hotfix/viaticos-calculo-error → main\nApprove → Merge (sin esperar QA normal)" },
+      { icon: "🔄", who: "Tech Lead", action: "También mergea a develop para no perder el arreglo", code: "PR: hotfix/viaticos-calculo-error → develop\nApprove → Merge" }
+    ]
+  }
+];
+
+const roles = [
+  {
+    icon: "🏗️",
+    name: "Tech Lead",
+    desc: "Lidera el equipo técnico. Aprueba los cambios más importantes y toma decisiones de arquitectura.",
+    perms: [
+      { label: "Aprueba → main", color: "rgba(139,92,246,0.15)", textColor: "#c4b5fd" },
+      { label: "Deploy producción", color: "rgba(139,92,246,0.15)", textColor: "#c4b5fd" },
+      { label: "Admin GitHub", color: "rgba(239,68,68,0.15)", textColor: "#fca5a5" }
+    ]
+  },
+  {
+    icon: "👨‍💻",
+    name: "Desarrollador",
+    desc: "Trabaja en funcionalidades específicas de los módulos. Crea ramas feature y abre PRs hacia develop.",
+    perms: [
+      { label: "Crea feature/*", color: "rgba(20,184,166,0.15)", textColor: "#5eead4" },
+      { label: "Abre PRs", color: "rgba(20,184,166,0.15)", textColor: "#5eead4" },
+      { label: "Revisa PRs", color: "rgba(59,130,246,0.15)", textColor: "#93c5fd" }
+    ]
+  },
+  {
+    icon: "🔍",
+    name: "QA / Tester",
+    desc: "Valida que todo funcione en staging antes de publicar. No necesita saber Git profundamente.",
+    perms: [
+      { label: "Prueba staging", color: "rgba(59,130,246,0.15)", textColor: "#93c5fd" },
+      { label: "Reporta bugs", color: "rgba(245,158,11,0.15)", textColor: "#fcd34d" },
+      { label: "Aprueba staging", color: "rgba(59,130,246,0.15)", textColor: "#93c5fd" }
+    ]
+  },
+  {
+    icon: "🛠️",
+    name: "DevOps (opcional)",
+    desc: "Configura el CI/CD, los servidores y los secretos del sistema. En equipos pequeños, puede ser el Tech Lead.",
+    perms: [
+      { label: "Configura CI", color: "rgba(245,158,11,0.15)", textColor: "#fcd34d" },
+      { label: "Maneja env vars", color: "rgba(245,158,11,0.15)", textColor: "#fcd34d" },
+      { label: "Infra / servidores", color: "rgba(239,68,68,0.15)", textColor: "#fca5a5" }
+    ]
+  }
+];
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+
+// Glossary
+const gEl = document.getElementById('glossary');
+glossary.forEach((g, i) => {
+  const el = document.createElement('div');
+  el.className = 'gterm';
+  el.innerHTML = `
+    <span class="gterm-toggle">+</span>
+    <div class="gterm-word">${g.word}</div>
+    <div class="gterm-pron">${g.pron}</div>
+    <div class="gterm-es">${g.es}</div>
+    <div class="gterm-desc">${g.short}</div>
+    <div class="gterm-expand">
+      <div class="gterm-example"><strong>Ejemplo en el proyecto:</strong><br>${g.example}</div>
+    </div>`;
+  el.addEventListener('click', () => el.classList.toggle('open'));
+  gEl.appendChild(el);
+});
+
+// Flow
+const fEl = document.getElementById('flow-diagram');
+flowLanes.forEach((lane, idx) => {
+  const laneDiv = document.createElement('div');
+  laneDiv.className = 'flow-lane';
+  const nodesHtml = lane.nodes.map(n => `
+    <div class="branch-node ${lane.color}">
+      ${n.badge ? `<span class="node-badge ${n.badgeClass}">${n.badge}</span>` : ''}
+      <div class="node-name">${n.name}</div>
+      <div class="node-desc">${n.desc}</div>
+    </div>`).join('');
+  laneDiv.innerHTML = `
+    <div class="lane-label">${lane.label}</div>
+    <div class="lane-content">
+      ${nodesHtml}
+      <p style="font-size:12px;color:var(--muted);flex:1;min-width:200px;margin-left:0.5rem;">${lane.note}</p>
+    </div>`;
+  fEl.appendChild(laneDiv);
+  if (idx < flowLanes.length - 1) {
+    const arrow = document.createElement('div');
+    arrow.className = 'arrow-row';
+    arrow.innerHTML = `<span style="font-size:14px;margin-left:36px;color:var(--muted)">↑ PR aprobado sube</span>`;
+    fEl.insertBefore(arrow, laneDiv);
+    fEl.appendChild(arrow);
+    // re-order: put arrow after
+    fEl.appendChild(laneDiv);
+  }
+});
+
+// Fix: rebuild flow in correct order (top = prod, bottom = work)
+fEl.innerHTML = '';
+[...flowLanes].reverse().forEach((lane, idx) => {
+  if (idx > 0) {
+    const arrow = document.createElement('div');
+    arrow.className = 'arrow-row';
+    arrow.innerHTML = `<span style="margin-left:36px;font-size:13px;">↑ &nbsp;PR aprobado → merge hacia arriba</span>`;
+    fEl.appendChild(arrow);
+  }
+  const laneDiv = document.createElement('div');
+  laneDiv.className = 'flow-lane';
+  const nodesHtml = lane.nodes.map(n => `
+    <div class="branch-node ${lane.color}">
+      ${n.badge ? `<span class="node-badge ${n.badgeClass}">${n.badge}</span>` : ''}
+      <div class="node-name">${n.name}</div>
+      <div class="node-desc">${n.desc}</div>
+    </div>`).join('');
+  laneDiv.innerHTML = `
+    <div class="lane-label">${lane.label}</div>
+    <div class="lane-content">
+      ${nodesHtml}
+      <p style="font-size:12px;color:var(--muted);flex:1;min-width:180px;margin-left:0.5rem;">${lane.note}</p>
+    </div>`;
+  fEl.appendChild(laneDiv);
+});
+
+// Commands
+const cEl = document.getElementById('commands-list');
+commands.forEach((cmd, i) => {
+  const el = document.createElement('div');
+  el.className = 'cmd-card';
+  const stepsHtml = cmd.steps.map(s => `
+    <div class="cmd-step">
+      <div class="cmd-step-label">${s.label}</div>
+      <div class="cmd-step-desc">${s.desc}</div>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">copiar</button>
+        <pre style="margin:0;white-space:pre-wrap;">${s.code}</pre>
+      </div>
+      ${s.explain ? `<p style="font-size:11px;color:var(--muted);margin-top:8px;font-family:var(--mono);line-height:1.6;">📌 ${s.explain}</p>` : ''}
+    </div>`).join('');
+  el.innerHTML = `
+    <div class="cmd-header" onclick="this.parentElement.classList.toggle('open')">
+      <div>
+        <div class="cmd-title">${cmd.title}</div>
+        <div class="cmd-subtitle">${cmd.subtitle}</div>
+      </div>
+      <span class="cmd-tag ${cmd.tag}">${cmd.tagText}</span>
+    </div>
+    <div class="cmd-body">
+      <div class="cmd-inner">${stepsHtml}</div>
+    </div>`;
+  cEl.appendChild(el);
+});
+
+// Scenarios
+const sEl = document.getElementById('scenarios-list');
+scenarios.forEach(sc => {
+  const stepsHtml = sc.steps.map(s => `
+    <div class="sstep">
+      <div class="sstep-icon">${s.icon}</div>
+      <div class="sstep-content">
+        <div class="sstep-who">${s.who}</div>
+        <div class="sstep-action">${s.action}</div>
+        <div class="sstep-code">${s.code.replace(/\n/g,'<br>')}</div>
+      </div>
+    </div>`).join('');
+  const div = document.createElement('div');
+  div.className = 'scenario-card';
+  div.innerHTML = `
+    <div class="scenario-header">
+      <div class="scenario-num ${sc.color}">${sc.num}</div>
+      <div>
+        <div class="scenario-title">${sc.title}</div>
+        <div class="scenario-subtitle">${sc.subtitle}</div>
+      </div>
+    </div>
+    <div class="scenario-steps">${stepsHtml}</div>`;
+  sEl.appendChild(div);
+});
+
+// Roles
+const rEl = document.getElementById('roles-grid');
+roles.forEach(r => {
+  const permsHtml = r.perms.map(p => `<span class="perm" style="background:${p.color};color:${p.textColor}">${p.label}</span>`).join('');
+  const el = document.createElement('div');
+  el.className = 'role-card';
+  el.innerHTML = `
+    <div class="role-icon">${r.icon}</div>
+    <div class="role-name">${r.name}</div>
+    <div class="role-desc">${r.desc}</div>
+    <div class="role-perms">${permsHtml}</div>`;
+  rEl.appendChild(el);
+});
+
+// ── FUNCTIONS ─────────────────────────────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('sec-' + id).classList.add('active');
+}
+
+function copyCode(btn) {
+  const pre = btn.nextElementSibling;
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ copiado';
+    setTimeout(() => btn.textContent = 'copiar', 2000);
+  });
+}
+
+// Tooltip for word-pills
+const termMap = {};
+glossary.forEach(g => { termMap[g.word.toLowerCase()] = g; });
+const tt = document.getElementById('tooltip');
+document.querySelectorAll('.word-pill').forEach(pill => {
+  pill.addEventListener('mouseenter', e => {
+    const key = pill.textContent.trim().toLowerCase();
+    const g = Object.values(termMap).find(x => x.word.toLowerCase() === key || x.es.toLowerCase() === key);
+    if (!g) return;
+    document.getElementById('tt-word').textContent = g.word;
+    document.getElementById('tt-pron').textContent = g.pron;
+    document.getElementById('tt-es').textContent = '🇪🇸 ' + g.es;
+    document.getElementById('tt-def').textContent = g.short;
+    tt.style.left = (e.pageX + 12) + 'px';
+    tt.style.top = (e.pageY - 10) + 'px';
+    tt.classList.add('show');
+  });
+  pill.addEventListener('mouseleave', () => tt.classList.remove('show'));
+});
+</script>
+</body>
+</html>

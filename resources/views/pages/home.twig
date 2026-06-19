@@ -6,11 +6,10 @@
     {# ── SIDEBAR MEJORADA ─────────────────────────────────────────────── #}
     <aside class="modules-sidebar compact" data-aos="fade-right" data-aos-duration="700">
       <div class="sidebar-header">
-        <a href="/" class="sidebar-logo">
-<<<<<<< HEAD
+        <a href="/glosario" class="sidebar-logo" style="display: flex; align-items: center; text-decoration: none;">
           <span class="brand-dot-small"></span>
-          <span class="sidebar-brand">Wiki de la app</span>
-=======
+          <span class="sidebarx -brand">Wiki de la app</span>
+
           <div class="logo-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" fill="url(#gradient-logo)"/>
@@ -24,8 +23,6 @@
               </defs>
             </svg>
           </div>
-          <span class="sidebar-brand">VERMQEN</span>
->>>>>>> 230cd9765df290d10793625089d535cb470640cf
         </a>
       </div>
 
@@ -70,14 +67,11 @@
 
     {# ── CONTENIDO PRINCIPAL ──────────────────────────────────────────── #}
     <main class="modules-main">
-      {# Hero #}
       <section class="hero-card p-3 p-lg-4 mb-3" data-aos="fade-up" data-aos-duration="800">
         <div class="row g-4 align-items-center">
           <div class="col-lg-8">
             <p class="hero-eyebrow mb-2">Documentación técnica centralizada</p>
-
-            <h1 class="display-6 fw-bold mb-3">Wiki <span class="text">App Cide</span></h1>
-
+            <h1 class="display-6 fw-bold mb-3">Wiki <span class="text">App CIDE</span></h1>
             <p class="lead text-secondary mb-4">
               Base de documentación del proyecto, organizada por categorías y módulos.
             </p>
@@ -99,7 +93,6 @@
         </div>
       </section>
 
-      {# ── CATEGORÍAS PRINCIPALES ───────────────────────────────────────── #}
       <section class="categories-showcase mb-3" data-aos="fade-up" data-aos-delay="150">
         <div class="categories-header">
           <h2 class="categories-title">Explora por Categoría</h2>
@@ -111,13 +104,9 @@
             <a href="/{{ category.key }}" class="category-card" data-aos="zoom-in" data-aos-delay="{{ loop.index * 100 }}">
               <div class="category-card-inner">
                 <div class="category-icon">
-                  {% if loop.index == 1 %}
-                    <i class="bi bi-gear"></i>
-                  {% elseif loop.index == 2 %}
-                    <i class="bi bi-box-seam"></i>
-                  {% else %}
-                    <i class="bi bi-diagram-3"></i>
-                  {% endif %}
+                  {% if loop.index == 1 %}<i class="bi bi-gear"></i>
+                  {% elseif loop.index == 2 %}<i class="bi bi-box-seam"></i>
+                  {% else %}<i class="bi bi-diagram-3"></i>{% endif %}
                 </div>
                 <h3 class="category-name">{{ category.label }}</h3>
                 <p class="category-count">{{ category.modules|length }} módulos</p>
@@ -135,24 +124,17 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // ────── TOGGLE DE CATEGORÍAS ──────
   const categoryToggles = document.querySelectorAll('.sidebar-category-toggle');
-  
   categoryToggles.forEach(toggle => {
     const categoryKey = toggle.dataset.category;
     const modulesList = document.querySelector(`.sidebar-modules[data-category="${categoryKey}"]`);
-    
-    // Expandir la primera categoría por defecto
     if (toggle === categoryToggles[0]) {
       modulesList.classList.add('open');
       toggle.setAttribute('aria-expanded', 'true');
     }
-    
     toggle.addEventListener('click', function(e) {
       e.preventDefault();
       const isOpen = modulesList.classList.contains('open');
-      
-      // Cerrar otras categorías
       categoryToggles.forEach(t => {
         if (t !== toggle) {
           const key = t.dataset.category;
@@ -161,44 +143,31 @@ document.addEventListener('DOMContentLoaded', function() {
           t.setAttribute('aria-expanded', 'false');
         }
       });
-      
-      // Toggle la actual
       modulesList.classList.toggle('open');
       toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
     });
   });
 
-  // ────── BUSCADOR DE MÓDULOS ──────
   const searchInput = document.getElementById('moduleSearch');
   const categoryFilter = document.getElementById('categoryFilter');
-  
   function filterModules() {
     const searchTerm = searchInput.value.toLowerCase();
     const selectedCategory = categoryFilter.value;
     const moduleLinks = document.querySelectorAll('.sidebar-module-link');
-    
     moduleLinks.forEach(link => {
       const title = link.textContent.toLowerCase();
       const category = link.dataset.category;
-      
       const matchesSearch = searchTerm === '' || title.includes(searchTerm);
       const matchesCategory = selectedCategory === '' || category === selectedCategory;
-      
-      if (matchesSearch && matchesCategory) {
-        link.parentElement.style.display = 'block';
-      } else {
-        link.parentElement.style.display = 'none';
-      }
+      link.parentElement.style.display = (matchesSearch && matchesCategory) ? 'block' : 'none';
     });
   }
-  
   searchInput.addEventListener('input', filterModules);
   categoryFilter.addEventListener('change', filterModules);
 });
 </script>
 
 <style>
-/* Mejorar la apariencia del select en diferentes navegadores */
 .filter-select {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -209,15 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
   background-size: 1.2em 1.2em;
   padding-right: 2.5rem;
 }
-
-.filter-select option {
-  background: #0a0e27;
-  color: #f3f4f6;
-}
-
-body.light-mode .filter-select option {
-  background: #ffffff;
-  color: #1f2937;
-}
+.filter-select option { background: #0a0e27; color: #f3f4f6; }
+body.light-mode .filter-select option { background: #ffffff; color: #1f2937; }
 </style>
 {% endblock %}
