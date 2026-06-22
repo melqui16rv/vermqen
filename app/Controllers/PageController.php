@@ -54,6 +54,7 @@ final class PageController
                 $categories[$catKey] = [
                     'key'     => $catKey,
                     'label'   => $this->categoryLabel($catKey),
+                    'path'    => $this->routePath($basePath, '/' . $catKey, $queryMode),
                     'modules' => [],
                 ];
             }
@@ -68,6 +69,7 @@ final class PageController
             'categories'        => array_values($categories),
             'legacyPath'        => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
             'queryRouteExample' => $this->routePath($basePath, '/flujo-github', true),
+            'homePath'          => $this->routePath($basePath, '/', $queryMode),
             'assetBase'         => $this->assetBase($basePath),
         ]);
     }
@@ -144,6 +146,7 @@ final class PageController
                 $categories[$catKey] = [
                     'key'     => $catKey,
                     'label'   => $this->categoryLabel($catKey),
+                    'path'    => $this->routePath($basePath, '/' . $catKey, $queryMode),
                     'modules' => [],
                 ];
             }
