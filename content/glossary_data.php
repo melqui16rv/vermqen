@@ -40,9 +40,17 @@ return [
         'term' => 'DNS Resolver',
         'definition' => 'Servidor intermedio que actúa como "agenda de contactos" para traducir nombres de dominio a direcciones IP.'
     ],
-    'ui_ux' => [
-        'term' => 'UI / UX',
-        'definition' => 'UI (User Interface) se enfoca en la estética y lo visual; UX (User Experience) se enfoca en la lógica, el sentimiento y la usabilidad.',
+    'dns' => [
+        'term' => 'DNS (Sistema de Nombres de Dominio)',
+        'definition' => 'Sistema que traduce nombres de dominio legibles por humanos a direcciones IP que los navegadores pueden entender.'
+    ],
+    'ui' => [
+        'term' => 'UI (Interfaz de Usuario)',
+        'definition' => 'Parte de un software o aplicación que permite a los usuarios interactuar con el sistema.'
+    ],
+    'ux' => [
+        'term' => 'UX (Experiencia de Usuario)',
+        'definition' => 'Conjunto de factores y elementos que determinan la percepción y satisfacción del usuario al interactuar con un producto o servicio.'
     ],
     'blade' => [
         'term' => 'Blade',
@@ -56,7 +64,7 @@ return [
         'term' => 'BD (Base de Datos)',
         'definition' => 'Acrónimo de Base de Datos; conjunto organizado de información estructurada.'
     ],
-    'name_server' => [
+    'name server' => [
         'term' => 'Name Server',
         'definition' => 'Servidor web configurado específicamente para alojar y gestionar los registros DNS de un nombre de dominio.'
     ],
@@ -153,6 +161,10 @@ return [
         'term' => 'Servicio SMTP',
         'definition' => 'Protocolo estándar para enviar correos electrónicos a través de Internet.'
     ],
+    'smtp' => [
+        'term' => 'SMTP (Simple Mail Transfer Protocol)',
+        'definition' => 'Protocolo de comunicación utilizado para enviar correos electrónicos entre servidores de correo.'
+    ],
     'Tinker' => [
         'term' => 'Tinker',
         'definition' => 'Herramienta de línea de comandos de Laravel que permite interactuar con la aplicación y la base de datos de manera interactiva.'
@@ -180,5 +192,9 @@ return [
     'camelCase' => [
         'term' => 'Camel Case',
         'definition' => 'Estilo de nomenclatura en el que las palabras están unidas sin espacios, y cada palabra después de la primera comienza con mayúscula.'
+    ],
+    'mapear' => [
+        'term' => 'Mapear',
+        'definition' => 'Proceso de establecer una correspondencia entre dos conjuntos de datos o estructuras, como mapear campos de un formulario a columnas de una base de datos.'
     ],
 ];

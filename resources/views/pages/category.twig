@@ -2,64 +2,7 @@
 
 {% block content %}
 <div class="modules-layout">
-    <aside class="modules-sidebar compact">
-        <div class="sidebar-header">
-            <a href="/" class="sidebar-logo">
-                <div class="logo-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="10" fill="url(#gradient-logo)"/>
-                        <circle cx="12" cy="12" r="6" fill="#0a0e27" opacity="0.8"/>
-                        <text x="12" y="15" font-size="10" font-weight="700" text-anchor="middle" fill="#8b5cf6" font-family="Inter">V</text>
-                        <defs>
-                            <linearGradient id="gradient-logo" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#8b5cf6"/>
-                                <stop offset="100%" stop-color="#ec4899"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-                <span class="sidebar-brand">App CIDE</span>
-            </a>
-        </div>
-
-        {# Buscador #}
-        <div class="sidebar-search">
-            <input type="text" id="moduleSearch" class="search-input" placeholder="Buscar módulo..." />
-            <i class="bi bi-search search-icon"></i>
-        </div>
-
-        {# Filtrador #}
-        <div class="sidebar-filter">
-            <select id="categoryFilter" class="filter-select">
-                <option value="">Todas las categorías</option>
-                {% for category in categories %}
-                    <option value="{{ category.key }}">{{ category.label }}</option>
-                {% endfor %}
-            </select>
-            <i class="bi bi-funnel filter-icon"></i>
-        </div>
-
-        <div class="sidebar-content">
-            {% for category in categories %}
-                <div class="sidebar-section">
-                    <button class="sidebar-category-toggle" data-category="{{ category.key }}">
-                        <span class="category-title">{{ category.label }}</span>
-                        <i class="bi bi-chevron-down toggle-icon"></i>
-                    </button>
-                    <ul class="sidebar-modules" data-category="{{ category.key }}">
-                        {% for module in category.modules %}
-                            <li class="sidebar-module-item">
-                                <a href="{{ module.path }}" class="sidebar-module-link" data-category="{{ category.key }}" title="{{ module.title }}">
-                                    <span class="module-dot"></span>
-                                    {{ module.title }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endfor %}
-        </div>
-    </aside>
+    {% include 'partials/sidebar.twig' %}
 
     <main class="modules-main">
         <!-- Hero Section -->

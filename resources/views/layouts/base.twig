@@ -29,7 +29,7 @@
             <nav class="navbar navbar-expand-lg navbar-dark py-3">
                 <div class="container">
                     <a class="navbar-brand d-flex align-items-center gap-2" href="{{ navigation[0].path }}">
-                        <span class="brand-dot"></span>
+                        <i class="bi bi-brain brand-icon"></i>
                         <span class="brand-title">APP-CIDE</span>
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#wikiNav" aria-controls="wikiNav" aria-expanded="false" aria-label="Navegación">
@@ -50,46 +50,140 @@
                 </div>
             </nav>
         </header>
-        <main class="content-main">
-            <div class="container py-4 py-lg-5" id="main-content">
-                {% block content %}{% endblock %}
-            </div>
-            
-            <footer class="border-top border-dark-subtle py-4 mt-auto">
-                <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
-                    <span>APP-CIDE· Wiki colaborativa del proyecto</span>
-                    <span>Stack: Slim 4 · Twig · Bootstrap 5 · Alpine.js</span>
+        <div class="content-wrapper">
+            <main class="content-main">
+                <div class="container py-4 py-lg-5" id="main-content">
+                    {% block content %}{% endblock %}
                 </div>
-            </footer>
-        </main>
+            </main>
+        </div>
 
-        <aside class="sidebar-right">
-        </aside>
+        {% if showFooter is not defined or showFooter %}
+        <footer class="border-top border-dark-subtle py-4 mt-auto">
+            <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+                <span>APP-CIDE· Wiki colaborativa del proyecto</span>
+                <span>Stack: Slim 4 · Twig · Bootstrap 5 · Alpine.js</span>
+            </div>
+        </footer>
+        {% endif %}
     </div>
 
     {% if currentSlug != 'glosario' %}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const GLOSSARY_TERMS = ['crud', 'dashboard', 'devops']; // Actualiza esta lista según tu PHP
-            const content = document.getElementById('main-content');
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
-                acceptNode: (node) => {
-                    const parent = node.parentElement.tagName;
-                    const excluded = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'A', 'CODE', 'PRE', 'NAV', 'FOOTER', 'BUTTON', 'INPUT'];
-                    return excluded.includes(parent) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+            const glossaryPath = '{{ glossaryPath }}';
+            const glossaryData = {{ glossaryData|json_encode|raw }};
+            const glossaryMap = {};
+
+            Object.values(glossaryData).forEach(item => {
+                const anchor = item.anchor;
+                if (!anchor) return;
+                const term = String(item.term || '').trim().toLowerCase();
+                if (term) {
+                    glossaryMap[term] = anchor;
+                    const compact = term.replace(/\s+/g, '').replace(/[^a-z0-9]/gi, '');
+                    if (compact && compact !== term) glossaryMap[compact] = anchor;
+                }
+                if (Array.isArray(item.aliases)) {
+                    item.aliases.forEach(alias => {
+                        const aliasText = String(alias || '').trim().toLowerCase();
+                        if (aliasText) {
+                            glossaryMap[aliasText] = anchor;
+                            const compactA = aliasText.replace(/\s+/g, '').replace(/[^a-z0-9]/gi, '');
+                            if (compactA && compactA !== aliasText) glossaryMap[compactA] = anchor;
+                        }
+                    });
+                }
+                if (item.sub_terms && typeof item.sub_terms === 'object') {
+                    Object.keys(item.sub_terms).forEach(subTerm => {
+                        const subText = String(subTerm || '').trim().toLowerCase();
+                        if (subText) {
+                            glossaryMap[subText] = anchor;
+                            const compactS = subText.replace(/\s+/g, '').replace(/[^a-z0-9]/gi, '');
+                            if (compactS && compactS !== subText) glossaryMap[compactS] = anchor;
+                        }
+                    });
                 }
             });
 
+            const terms = Object.keys(glossaryMap).sort((a, b) => b.length - a.length);
+            if (terms.length === 0) return;
+
+            const content = document.getElementById('main-content');
+            if (!content) return;
+
+            const excluded = ['A', 'SCRIPT', 'STYLE', 'CODE', 'PRE', 'NAV', 'FOOTER', 'BUTTON', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION'];
+            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
+                acceptNode: (node) => {
+                    const parent = node.parentElement;
+                    if (!parent) return NodeFilter.FILTER_REJECT;
+                    if (excluded.includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+                    if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+            });
+
+            const isWordChar = char => /[A-Za-z0-9_]/.test(char);
+            const isUpper = char => /[A-ZÁÉÍÓÚÜÑ]/.test(char);
+            const isLower = char => /[a-záéíóúüñ]/.test(char);
+
+            const isValidTermBoundary = (text, start, length) => {
+                const before = start > 0 ? text[start - 1] : '';
+                const after = start + length < text.length ? text[start + length] : '';
+                const beforeWord = isWordChar(before);
+                const afterWord = isWordChar(after);
+
+                if (!beforeWord && !afterWord) return true;
+                if (!beforeWord && after && isUpper(after)) return true;
+                if (before && isLower(before) && after && isUpper(after)) return true;
+                if (before && isLower(before) && !afterWord && after === '') return true;
+                return false;
+            };
+
             let node;
             while (node = walker.nextNode()) {
-                let html = node.nodeValue;
-                GLOSSARY_TERMS.forEach(term => {
-                    const regex = new RegExp(`\\b(${term})\\b`, 'gi');
-                    html = html.replace(regex, `<a href="/glosario#glossary-${term.toLowerCase()}" style="color: #8e44ad; text-decoration: underline dotted;">$1</a>`);
-                });
-                
-                if (html !== node.nodeValue) {
+                const originalText = node.nodeValue;
+                const lowerText = originalText.toLowerCase();
+                let cursor = 0;
+                let html = '';
+
+                while (cursor < originalText.length) {
+                    let nextMatch = null;
+                    let nextTerm = null;
+
+                    for (const term of terms) {
+                        const index = lowerText.indexOf(term, cursor);
+                        if (index === -1) continue;
+                        if (nextMatch === null || index < nextMatch || (index === nextMatch && term.length > nextTerm.length)) {
+                            nextMatch = index;
+                            nextTerm = term;
+                        }
+                    }
+
+                    if (nextMatch === null) {
+                        html += originalText.slice(cursor);
+                        break;
+                    }
+
+                    if (nextMatch > cursor) {
+                        html += originalText.slice(cursor, nextMatch);
+                    }
+
+                    const termStart = nextMatch;
+                    const termLength = nextTerm.length;
+                    const anchor = glossaryMap[nextTerm];
+
+                    if (isValidTermBoundary(originalText, termStart, termLength)) {
+                        const matchedText = originalText.slice(termStart, termStart + termLength);
+                        html += `<a href="${glossaryPath}#glossary-${anchor}" class="glossary-link">${matchedText}</a>`;
+                        cursor = termStart + termLength;
+                    } else {
+                        html += originalText[cursor];
+                        cursor += 1;
+                    }
+                }
+
+                if (html !== originalText) {
                     const span = document.createElement('span');
                     span.innerHTML = html;
                     node.parentNode.replaceChild(span, node);

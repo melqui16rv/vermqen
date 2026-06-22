@@ -17,7 +17,7 @@
     <div class="row g-3">
         {% for key, item in glossary %}
         <div class="col-md-6" x-show="'{{ item.term|lower }}'.includes(search.toLowerCase())">
-            <article id="glossary-{{ key|lower }}" class="glass-panel p-3 h-100">
+            <article id="glossary-{{ item.anchor }}" class="glass-panel p-3 h-100">
                 <h5 class="text-primary mb-2">{{ item.term }}</h5>
                 <p class="text-secondary small mb-2">{{ item.definition }}</p>
                 

@@ -1,0 +1,78 @@
+<aside class="modules-sidebar compact" data-aos="fade-right" data-aos-duration="700">
+    <div class="sidebar-header">
+        <a href="{{ glossaryPath }}" class="sidebar-logo">
+            <div class="logo-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 9.5C6.2 9.5 5.5 8.8 5.5 8C5.5 7.2 6.2 6.5 7 6.5H8.5V4.5C8.5 4.2 8.7 4 9 4H11C11.3 4 11.5 4.2 11.5 4.5V6.5H12.5V4.5C12.5 4.2 12.7 4 13 4H15C15.3 4 15.5 4.2 15.5 4.5V6.5H17C17.8 6.5 18.5 7.2 18.5 8C18.5 8.8 17.8 9.5 17 9.5H15.5V11.5H17C17.8 11.5 18.5 12.2 18.5 13C18.5 13.8 17.8 14.5 17 14.5H15.5V16.5C15.5 16.8 15.3 17 15 17H13C12.7 17 12.5 16.8 12.5 16.5V14.5H11.5V16.5C11.5 16.8 11.3 17 11 17H9C8.7 17 8.5 16.8 8.5 16.5V14.5H7C6.2 14.5 5.5 13.8 5.5 13C5.5 12.2 6.2 11.5 7 11.5H8.5V9.5H7Z" fill="url(#gradient-logo)"/>
+                    <defs>
+                        <linearGradient id="gradient-logo" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#8b5cf6"/>
+                            <stop offset="100%" stop-color="#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <div>
+                <div class="sidebar-brand">APP-CIDE</div>
+                <small class="text-secondary"></small>
+            </div>
+        </a>
+    </div>
+
+    {% if popularModules is defined and popularModules %}
+        <div class="sidebar-popular">
+            <div class="sidebar-popular-header">
+                <span class="sidebar-popular-title">Más vistos</span>
+                <span class="sidebar-popular-meta">Top 3</span>
+            </div>
+            <ol class="sidebar-popular-list">
+                {% for module in popularModules %}
+                    <li>
+                        <a href="{{ module.path }}" class="sidebar-popular-link" title="{{ module.title }}">
+                            <span>{{ module.title }}</span>
+                            {% if module.score > 0 %}
+                                <small class="sidebar-popular-score">{{ module.score }}</small>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+    {% endif %}
+
+    <div class="sidebar-search">
+        <input type="text" id="moduleSearch" class="search-input" placeholder="Buscar módulo..." />
+        <i class="bi bi-search search-icon"></i>
+    </div>
+
+    <div class="sidebar-filter">
+        <select id="categoryFilter" class="filter-select">
+            <option value="">Todas las categorías</option>
+            {% for category in categories %}
+                <option value="{{ category.key }}">{{ category.label }}</option>
+            {% endfor %}
+        </select>
+        <i class="bi bi-funnel filter-icon"></i>
+    </div>
+
+    <div class="sidebar-content">
+        {% for category in categories %}
+            <div class="sidebar-section">
+                <button class="sidebar-category-toggle{% if category.key == currentCategory %} active{% endif %}" data-category="{{ category.key }}" aria-expanded="{{ category.key == currentCategory ? 'true' : 'false' }}">
+                    <span class="category-title">{{ category.label }}</span>
+                    <i class="bi bi-chevron-down toggle-icon"></i>
+                </button>
+                <ul class="sidebar-modules{% if category.key == currentCategory %} open{% endif %}" data-category="{{ category.key }}">
+                    {% for module in category.modules %}
+                        <li class="sidebar-module-item">
+                            <a href="{{ module.path }}" class="sidebar-module-link{% if module.slug == currentSlug %} active{% endif %}" data-category="{{ category.key }}" title="{{ module.title }}" {% if module.slug == currentSlug %}aria-current="page"{% endif %}>
+                                <span class="module-dot"></span>
+                                {{ module.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+</aside>

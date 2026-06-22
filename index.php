@@ -39,14 +39,24 @@ if (is_string($routeOverride) && $routeOverride !== '') {
 $app = AppFactory::create();
 if ($basePath !== '') $app->setBasePath($basePath);
 
+$rawGlossaryData = require __DIR__ . '/content/glossary_data.php';
+$glossaryData = [];
+foreach ($rawGlossaryData as $key => $item) {
+    $anchor = preg_replace('/[^a-z0-9]+/', '-', strtolower(trim((string) $key)));
+    $anchor = trim($anchor, '-');
+    $item['anchor'] = $anchor;
+    $glossaryData[$key] = $item;
+}
+
 $twig = Twig::create(__DIR__ . '/resources/views', ['cache' => false]);
+$twig->getEnvironment()->addGlobal('glossaryData', $glossaryData);
 $app->add(TwigMiddleware::create($app, $twig));
 
 $contentRepository = new ContentRepository(__DIR__ . '/content');
 $pageController = new PageController($twig, $contentRepository);
 
 // Invocación directa del archivo de rutas
-(require __DIR__ . '/app/Routes/web.php')($app, $pageController);
+(require __DIR__ . '/app/Routes/web.php')($app, $pageController, $glossaryData);
 
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);

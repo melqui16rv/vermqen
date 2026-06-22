@@ -7,15 +7,14 @@ use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 use Slim\Views\Twig;
 
-return static function (App $app, PageController $pageController): void {
+return static function (App $app, PageController $pageController, array $glossaryData): void {
     
     // 1. Ruta de Inicio
     $app->get('/', [$pageController, 'home']);
 
     // 2. Ruta de Glosario
-    $app->get('/glosario', function (Request $request, Response $response) {
+    $app->get('/glosario', function (Request $request, Response $response) use ($glossaryData) {
         $view    = Twig::fromRequest($request);
-        $glossary = require __DIR__ . '/../../content/glossary_data.php';
 
         $serverParams = $request->getServerParams();
         $scriptName   = str_replace('\\', '/', (string)($serverParams['SCRIPT_NAME'] ?? ''));
@@ -32,7 +31,7 @@ return static function (App $app, PageController $pageController): void {
 
         return $view->render($response, 'glossary.twig', [
             'pageTitle'    => 'Glosario de la Wiki',
-            'glossary'     => $glossary,
+            'glossary'     => $glossaryData,
             'homePath'     => $routePath('/'),
             'glossaryPath' => $routePath('/glosario'),
             'assetBase'    => $basePath,

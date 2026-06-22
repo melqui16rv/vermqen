@@ -67,11 +67,14 @@ final class PageController
             'navigation'        => array_slice($this->buildNavigation($basePath, null, $queryMode), 0, 1),
             'modules'           => $modules,
             'categories'        => array_values($categories),
+            'popularModules'    => $this->buildPopularModules($basePath, $queryMode, 3),
+            'showFooter'        => $this->shouldShowFooter($request),
             'legacyPath'        => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
             'queryRouteExample' => $this->routePath($basePath, '/flujo-github', true),
             'homePath'          => $this->routePath($basePath, '/', $queryMode),
             'glossaryPath'      => $this->routePath($basePath, '/glosario', $queryMode),
             'assetBase'         => $this->assetBase($basePath),
+            'glossaryData'      => $this->getGlossaryData(),
         ]);
     }
 
@@ -100,18 +103,26 @@ final class PageController
         $module['related_modules'] = $this->normalizeRelatedModules($module['related_modules'] ?? [], $basePath, $queryMode);
         $module['contribution']    = $this->normalizeContribution($module['contribution'] ?? null, $basePath);
 
+        $categories = $this->buildCategories($basePath, $queryMode);
+
         // Fase 3: cada módulo elige su propio template. Fallback al clásico.
         $template = (string)($module['template'] ?? 'pages/module.twig');
 
         return $this->twig->render($response, $template, [
-            'pageTitle'    => $module['title'] ?? 'Módulo',
-            'currentSlug'  => $slug,
-            'navigation'   => $this->buildNavigation($basePath, $slug, $queryMode),
-            'module'       => $module,
-            'homePath'     => $this->routePath($basePath, '/', $queryMode),
-            'glossaryPath' => $this->routePath($basePath, '/glosario', $queryMode),
-            'legacyPath'   => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
-            'assetBase'    => $this->assetBase($basePath),
+            'pageTitle'      => $module['title'] ?? 'Módulo',
+            'currentSlug'    => $slug,
+            'currentCategory'=> $category,
+            'navigation'     => $this->buildNavigation($basePath, $slug, $queryMode),
+            'categories'     => $categories,
+            'popularModules' => $this->buildPopularModules($basePath, $queryMode, 3),
+            'showSidebar'    => true,
+            'showFooter'     => $this->shouldShowFooter($request),
+            'module'         => $module,
+            'homePath'       => $this->routePath($basePath, '/', $queryMode),
+            'glossaryPath'   => $this->routePath($basePath, '/glosario', $queryMode),
+            'legacyPath'     => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
+            'assetBase'      => $this->assetBase($basePath),
+            'glossaryData'   => $this->getGlossaryData(),
         ]);
     }
 
@@ -168,14 +179,18 @@ final class PageController
         return $this->twig->render($response, 'pages/category.twig', [
             'pageTitle'     => $this->categoryLabel($categoryKey),
             'currentSlug'   => null,
+            'currentCategory'=> $categoryKey,
             'navigation'    => $this->buildNavigation($basePath, null, $queryMode),
             'categoryKey'   => $categoryKey,
             'categoryLabel' => $this->categoryLabel($categoryKey),
             'modules'       => $categoryModules,
             'categories'    => array_values($categories),
+            'popularModules' => $this->buildPopularModules($basePath, $queryMode, 3),
+            'showFooter'    => $this->shouldShowFooter($request),
             'homePath'      => $this->routePath($basePath, '/', $queryMode),
             'glossaryPath'  => $this->routePath($basePath, '/glosario', $queryMode),
             'assetBase'     => $this->assetBase($basePath),
+            'glossaryData'  => $this->getGlossaryData(),
         ]);
     }
 
@@ -230,6 +245,59 @@ final class PageController
         }
 
         return $navigation;
+    }
+
+    private function buildCategories(string $basePath, bool $queryMode): array
+    {
+        $categories = [];
+        foreach ($this->contentRepository->allModules() as $slug => $module) {
+            $catKey = (string)($module['category'] ?? 'general');
+            if (!isset($categories[$catKey])) {
+                $categories[$catKey] = [
+                    'key'     => $catKey,
+                    'label'   => $this->categoryLabel($catKey),
+                    'path'    => $this->routePath($basePath, '/' . $catKey, $queryMode),
+                    'modules' => [],
+                ];
+            }
+
+            $categories[$catKey]['modules'][] = [
+                'slug'  => $slug,
+                'title' => $module['title'] ?? $slug,
+                'path'  => $this->routePath($basePath, '/' . $catKey . '/' . $slug, $queryMode),
+            ];
+        }
+
+        return array_values($categories);
+    }
+
+    private function buildPopularModules(string $basePath, bool $queryMode, int $limit = 3): array
+    {
+        $modules = [];
+
+        foreach ($this->contentRepository->allModules() as $slug => $module) {
+            $category = (string)($module['category'] ?? 'general');
+            $score = (int)($module['daily_popularity'] ?? $module['daily_views'] ?? $module['popularity'] ?? $module['views'] ?? 0);
+
+            $modules[] = [
+                'slug'  => $slug,
+                'title' => $module['title'] ?? $slug,
+                'score' => $score,
+                'path'  => $this->routePath($basePath, '/' . $category . '/' . $slug, $queryMode),
+            ];
+        }
+
+        usort($modules, static fn (array $a, array $b): int => $b['score'] <=> $a['score'] ?: strcmp($a['title'], $b['title']));
+
+        return array_slice($modules, 0, $limit);
+    }
+
+    private function shouldShowFooter(ServerRequestInterface $request): bool
+    {
+        $params = $request->getQueryParams();
+        $footerValue = strtolower(trim((string)($params['footer'] ?? $params['nofooter'] ?? '')));
+
+        return !in_array($footerValue, ['0', 'false', 'no', 'off'], true);
     }
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
@@ -391,5 +459,17 @@ final class PageController
         }
 
         return $entryPoint . '?route=' . rawurlencode($route);
+    }
+
+    private function getGlossaryData(): array
+    {
+        try {
+            $env = $this->twig->getEnvironment();
+            $globals = $env->getGlobals();
+            $data = $globals['glossaryData'] ?? [];
+            return is_array($data) ? $data : [];
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 }
