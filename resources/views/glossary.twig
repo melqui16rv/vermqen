@@ -10,23 +10,23 @@
     </div>
 
     <div class="mb-4">
-        <input x-model="search" type="text" placeholder="Filtrar términos..." 
-               class="form-control bg-dark text-white border-secondary shadow-none">
+        <input x-model="search" type="text" placeholder="Busca aquí el término" 
+               class="form-control glossary-search border-secondary shadow-none">
     </div>
 
-    <div class="row g-3">
+    <div class="glossary-grid">
         {% for key, item in glossary %}
-        <div class="col-md-6" x-show="'{{ item.term|lower }}'.includes(search.toLowerCase())">
+        <div class="glossary-card" x-show="'{{ item.term|lower }}'.includes(search.toLowerCase())">
             <article id="glossary-{{ item.anchor }}" class="glass-panel p-3 h-100">
-                <h5 class="text-primary mb-2">{{ item.term }}</h5>
-                <p class="text-secondary small mb-2">{{ item.definition }}</p>
-                
+                <h5 class="glossary-term mb-2">{{ item.term }}</h5>
+                <p class="glossary-def small mb-2">{{ item.definition }}</p>
+
                 {% if item.aliases %}
-                    <small class="d-block text-muted"><strong>Alias:</strong> {{ item.aliases|join(', ') }}</small>
+                    <small class="d-block glossary-meta"><strong>Alias:</strong> {{ item.aliases|join(', ') }}</small>
                 {% endif %}
-                
+
                 {% if item.sub_terms %}
-                    <small class="d-block text-muted"><strong>Sub-términos:</strong> {{ item.sub_terms|join(', ') }}</small>
+                    <small class="d-block glossary-meta"><strong>Sub-términos:</strong> {{ item.sub_terms|join(', ') }}</small>
                 {% endif %}
             </article>
         </div>
@@ -54,5 +54,39 @@
         outline: 3px solid #8e44ad;
         border-radius: 8px;
     }
+
+    .glossary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        max-height: calc(5 * 140px); /* show ~5 rows */
+        overflow: auto;
+        padding-right: 0.5rem;
+    }
+
+    .glossary-card article {
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .glossary-search {
+        background: #0b0b0b;
+        color: #ffffff;
+    }
+    .glossary-search::placeholder { color: #cfcfcf; opacity: 1; }
+
+    .glossary-term { color: #0f172a; font-weight: 600; }
+    .glossary-def, .glossary-meta { color: #475569; }
+
+    /* Dark mode / solid contrast tweaks */
+    body:not(.light-mode) .glossary-term { color: #f8fafc; }
+    body:not(.light-mode) .glossary-def, body:not(.light-mode) .glossary-meta { color: #e6eef8; }
+    body:not(.light-mode) .glossary-search { background: #0b0b0b; color: #fff; }
+
+    /* Small screens: 1 column, medium: 2, large: 3 */
+    @media (max-width: 767px) { .glossary-grid { grid-template-columns: 1fr; } }
+    @media (min-width: 768px) and (max-width: 991px) { .glossary-grid { grid-template-columns: repeat(2,1fr); } }
 </style>
 {% endblock %}
