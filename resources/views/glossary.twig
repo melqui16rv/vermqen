@@ -4,7 +4,9 @@
 <div x-data="{ search: '' }" class="container-fluid" data-aos="fade-up">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 fw-bold mb-0">Glosario de términos</h1>
-        <a href="/" class="btn btn-link text-secondary">Volver al inicio</a>
+<a href="#" onclick="history.back(); return false;" class="btn btn-link text-secondary">
+    Volver a la página anterior
+</a>
     </div>
 
     {# Buscador Alpine.js #}

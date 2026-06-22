@@ -64,4 +64,20 @@ return [
         'term' => 'Modelo Pivote',
         'definition' => 'Tabla intermedia utilizada para conectar dos tablas principales que tienen una relación de muchos a muchos (Many-to-Many).'
     ],
+    'cdp' => [
+        'term' => 'CDP (Certificado de Disponibilidad Presupuestal)',
+        'definition' => 'Documento que garantiza que la entidad cuenta con recursos presupuestales disponibles y libres de afectación para realizar un gasto o iniciar una contratación.'
+    ],
+    'crp' => [
+        'term' => 'CRP (Certificado de Registro Presupuestal)',
+        'definition' => 'Documento que ampara los recursos una vez se firma el contrato o se adquiere la obligación, garantizando que ese dinero ya no podrá destinarse a otro fin.'
+    ],
+    'op' => [
+        'term' => 'OP (Orden de Pago)',
+        'definition' => 'Documento emitido una vez recibido el bien o servicio a satisfacción, que autoriza a tesorería a girar o pagar al contratista o proveedor.'
+    ],
+    'DevOps' => [
+        'term' => 'DevOps',
+        'definition' => 'Cultura y conjunto de prácticas que unifican el desarrollo de software (Dev) y las operaciones de TI (Ops) para acortar el ciclo de vida del desarrollo y proporcionar entregas continuas con alta calidad.'
+    ]
 ];
