@@ -1,7 +1,5 @@
 <?php
-
 declare(strict_types=1);
-
 use App\Controllers\PageController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -14,14 +12,32 @@ return static function (App $app, PageController $pageController): void {
     // 1. Ruta de Inicio
     $app->get('/', [$pageController, 'home']);
 
-    // 2. Ruta de Glosario (Corregida: apunta directamente a 'glossary.twig')
+    // 2. Ruta de Glosario
     $app->get('/glosario', function (Request $request, Response $response) {
-        $view = Twig::fromRequest($request);
-        // Cargamos los datos del glosario
+        $view    = Twig::fromRequest($request);
         $glossary = require __DIR__ . '/../../content/glossary_data.php';
+
+        $serverParams = $request->getServerParams();
+        $scriptName   = str_replace('\\', '/', (string)($serverParams['SCRIPT_NAME'] ?? ''));
+        $basePath     = rtrim(str_replace('/index.php', '', $scriptName), '/');
+        $basePath     = $basePath === '/' ? '' : $basePath;
+
+        $originalRequestUri = (string)($serverParams['ORIGINAL_REQUEST_URI'] ?? '');
+        $queryMode = str_contains($originalRequestUri, 'index.php?route=');
+
+        $entryPoint = $basePath . '/index.php';
+        $routePath  = fn(string $path) => $queryMode
+            ? $entryPoint . '?route=' . rawurlencode(ltrim($path, '/'))
+            : $basePath . $path;
+
         return $view->render($response, 'glossary.twig', [
-            'pageTitle' => 'Glosario de la Wiki',
-            'glossary'  => $glossary
+            'pageTitle'    => 'Glosario de la Wiki',
+            'glossary'     => $glossary,
+            'homePath'     => $routePath('/'),
+            'glossaryPath' => $routePath('/glosario'),
+            'assetBase'    => $basePath,
+            'navigation'   => [],
+            'currentSlug'  => null,
         ]);
     });
 
