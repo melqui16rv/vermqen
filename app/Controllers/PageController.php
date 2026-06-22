@@ -70,6 +70,7 @@ final class PageController
             'legacyPath'        => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
             'queryRouteExample' => $this->routePath($basePath, '/flujo-github', true),
             'homePath'          => $this->routePath($basePath, '/', $queryMode),
+            'glossaryPath'      => $this->routePath($basePath, '/glosario', $queryMode),
             'assetBase'         => $this->assetBase($basePath),
         ]);
     }
@@ -87,29 +88,30 @@ final class PageController
 
         if ($module === null || (string)($module['category'] ?? 'general') !== $category) {
             return $this->twig->render($response->withStatus(404), 'pages/not-found.twig', [
-                'pageTitle'    => 'Página no encontrada',
-                'navigation'   => $this->buildNavigation($basePath, null, $queryMode),
+                'pageTitle'     => 'Página no encontrada',
+                'navigation'    => $this->buildNavigation($basePath, null, $queryMode),
                 'requestedSlug' => $slug,
-                'homePath'     => $this->routePath($basePath, '/', $queryMode),
-                'assetBase'    => $this->assetBase($basePath),
+                'homePath'      => $this->routePath($basePath, '/', $queryMode),
+                'assetBase'     => $this->assetBase($basePath),
             ]);
         }
 
-        $module['resources']         = $this->normalizeResourceUrls($module['resources'] ?? [], $basePath, $queryMode);
-        $module['related_modules']    = $this->normalizeRelatedModules($module['related_modules'] ?? [], $basePath, $queryMode);
-        $module['contribution']       = $this->normalizeContribution($module['contribution'] ?? null, $basePath);
+        $module['resources']      = $this->normalizeResourceUrls($module['resources'] ?? [], $basePath, $queryMode);
+        $module['related_modules'] = $this->normalizeRelatedModules($module['related_modules'] ?? [], $basePath, $queryMode);
+        $module['contribution']    = $this->normalizeContribution($module['contribution'] ?? null, $basePath);
 
         // Fase 3: cada módulo elige su propio template. Fallback al clásico.
         $template = (string)($module['template'] ?? 'pages/module.twig');
 
         return $this->twig->render($response, $template, [
-            'pageTitle'   => $module['title'] ?? 'Módulo',
-            'currentSlug' => $slug,
-            'navigation'  => $this->buildNavigation($basePath, $slug, $queryMode),
-            'module'      => $module,
-            'homePath'    => $this->routePath($basePath, '/', $queryMode),
-            'legacyPath'  => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
-            'assetBase'   => $this->assetBase($basePath),
+            'pageTitle'    => $module['title'] ?? 'Módulo',
+            'currentSlug'  => $slug,
+            'navigation'   => $this->buildNavigation($basePath, $slug, $queryMode),
+            'module'       => $module,
+            'homePath'     => $this->routePath($basePath, '/', $queryMode),
+            'glossaryPath' => $this->routePath($basePath, '/glosario', $queryMode),
+            'legacyPath'   => $this->withBasePath($basePath, '/flujo-github-vermqen.html'),
+            'assetBase'    => $this->assetBase($basePath),
         ]);
     }
 
@@ -125,7 +127,7 @@ final class PageController
         $queryMode   = $this->useQueryRouting($request);
 
         $categoryModules = [];
-        $categories = [];
+        $categories      = [];
         
         foreach ($this->contentRepository->allModules() as $slug => $module) {
             $catKey = (string)($module['category'] ?? 'general');
@@ -155,24 +157,25 @@ final class PageController
 
         if ($categoryModules === []) {
             return $this->twig->render($response->withStatus(404), 'pages/not-found.twig', [
-                'pageTitle'    => 'Página no encontrada',
-                'navigation'   => $this->buildNavigation($basePath, null, $queryMode),
+                'pageTitle'     => 'Página no encontrada',
+                'navigation'    => $this->buildNavigation($basePath, null, $queryMode),
                 'requestedSlug' => $categoryKey,
-                'homePath'     => $this->routePath($basePath, '/', $queryMode),
-                'assetBase'    => $this->assetBase($basePath),
+                'homePath'      => $this->routePath($basePath, '/', $queryMode),
+                'assetBase'     => $this->assetBase($basePath),
             ]);
         }
 
         return $this->twig->render($response, 'pages/category.twig', [
-            'pageTitle'    => $this->categoryLabel($categoryKey),
-            'currentSlug'  => null,
-            'navigation'   => $this->buildNavigation($basePath, null, $queryMode),
-            'categoryKey'  => $categoryKey,
+            'pageTitle'     => $this->categoryLabel($categoryKey),
+            'currentSlug'   => null,
+            'navigation'    => $this->buildNavigation($basePath, null, $queryMode),
+            'categoryKey'   => $categoryKey,
             'categoryLabel' => $this->categoryLabel($categoryKey),
-            'modules'      => $categoryModules,
-            'categories'   => array_values($categories),
-            'homePath'     => $this->routePath($basePath, '/', $queryMode),
-            'assetBase'    => $this->assetBase($basePath),
+            'modules'       => $categoryModules,
+            'categories'    => array_values($categories),
+            'homePath'      => $this->routePath($basePath, '/', $queryMode),
+            'glossaryPath'  => $this->routePath($basePath, '/glosario', $queryMode),
+            'assetBase'     => $this->assetBase($basePath),
         ]);
     }
 
@@ -281,10 +284,10 @@ final class PageController
                 continue;
             }
 
-            $slug = $normalizedParts[0];
+            $slug   = $normalizedParts[0];
             $module = $this->contentRepository->findModule($slug);
             if ($module !== null) {
-                $category = (string)($module['category'] ?? 'general');
+                $category                = (string)($module['category'] ?? 'general');
                 $resources[$index]['url'] = $this->routePath($basePath, '/' . $category . '/' . $slug, $queryMode);
                 continue;
             }
@@ -308,13 +311,13 @@ final class PageController
                 continue;
             }
 
-            $slug = $this->normalizeSlug($slug);
+            $slug   = $this->normalizeSlug($slug);
             $module = $this->contentRepository->findModule($slug);
             if ($module !== null) {
-                $category = (string)($module['category'] ?? 'general');
-                $relatedModule['url'] = $this->routePath($basePath, '/' . $category . '/' . $slug, $queryMode);
+                $category              = (string)($module['category'] ?? 'general');
+                $relatedModule['url']  = $this->routePath($basePath, '/' . $category . '/' . $slug, $queryMode);
             } else {
-                $relatedModule['url'] = $this->withBasePath($basePath, '/' . $slug);
+                $relatedModule['url']  = $this->withBasePath($basePath, '/' . $slug);
             }
 
             $relatedModules[$index] = $relatedModule;
@@ -360,7 +363,7 @@ final class PageController
 
     private function useQueryRouting(ServerRequestInterface $request): bool
     {
-        $serverParams      = $request->getServerParams();
+        $serverParams       = $request->getServerParams();
         $originalRequestUri = (string)($serverParams['ORIGINAL_REQUEST_URI'] ?? '');
         if ($originalRequestUri !== '' && str_contains($originalRequestUri, 'index.php?route=')) {
             return true;
