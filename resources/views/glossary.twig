@@ -4,12 +4,11 @@
 <div x-data="{ search: '' }" class="container-fluid" data-aos="fade-up">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 fw-bold mb-0">Glosario de términos</h1>
-<a href="#" onclick="history.back(); return false;" class="btn btn-link text-secondary">
-    Volver a la página anterior
-</a>
+        <a href="#" onclick="history.back(); return false;" class="btn btn-link text-secondary">
+            Volver a la página anterior
+        </a>
     </div>
 
-    {# Buscador Alpine.js #}
     <div class="mb-4">
         <input x-model="search" type="text" placeholder="Filtrar términos..." 
                class="form-control bg-dark text-white border-secondary shadow-none">
@@ -18,12 +17,42 @@
     <div class="row g-3">
         {% for key, item in glossary %}
         <div class="col-md-6" x-show="'{{ item.term|lower }}'.includes(search.toLowerCase())">
-            <article class="glass-panel p-3 h-100">
+            <article id="glossary-{{ key|lower }}" class="glass-panel p-3 h-100">
                 <h5 class="text-primary mb-2">{{ item.term }}</h5>
-                <p class="text-secondary small mb-0">{{ item.definition }}</p>
+                <p class="text-secondary small mb-2">{{ item.definition }}</p>
+                
+                {% if item.aliases %}
+                    <small class="d-block text-muted"><strong>Alias:</strong> {{ item.aliases|join(', ') }}</small>
+                {% endif %}
+                
+                {% if item.sub_terms %}
+                    <small class="d-block text-muted"><strong>Sub-términos:</strong> {{ item.sub_terms|join(', ') }}</small>
+                {% endif %}
             </article>
         </div>
         {% endfor %}
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const hash = window.location.hash;
+        if (hash && hash.startsWith('#glossary-')) {
+            const target = document.querySelector(hash);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                target.classList.add('highlight-pulse');
+                setTimeout(() => target.classList.remove('highlight-pulse'), 3000);
+            }
+        }
+    });
+</script>
+
+<style>
+    .highlight-pulse {
+        transition: outline 0.5s ease;
+        outline: 3px solid #8e44ad;
+        border-radius: 8px;
+    }
+</style>
 {% endblock %}

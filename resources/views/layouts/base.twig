@@ -51,7 +51,7 @@
             </nav>
         </header>
         <main class="content-main">
-            <div class="container py-4 py-lg-5">
+            <div class="container py-4 py-lg-5" id="main-content">
                 {% block content %}{% endblock %}
             </div>
             
@@ -66,6 +66,38 @@
         <aside class="sidebar-right">
         </aside>
     </div>
+
+    {% if currentSlug != 'glosario' %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const GLOSSARY_TERMS = ['crud', 'dashboard', 'devops']; // Actualiza esta lista según tu PHP
+            const content = document.getElementById('main-content');
+            
+            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
+                acceptNode: (node) => {
+                    const parent = node.parentElement.tagName;
+                    const excluded = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'A', 'CODE', 'PRE', 'NAV', 'FOOTER', 'BUTTON', 'INPUT'];
+                    return excluded.includes(parent) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+                }
+            });
+
+            let node;
+            while (node = walker.nextNode()) {
+                let html = node.nodeValue;
+                GLOSSARY_TERMS.forEach(term => {
+                    const regex = new RegExp(`\\b(${term})\\b`, 'gi');
+                    html = html.replace(regex, `<a href="/glosario#glossary-${term.toLowerCase()}" style="color: #8e44ad; text-decoration: underline dotted;">$1</a>`);
+                });
+                
+                if (html !== node.nodeValue) {
+                    const span = document.createElement('span');
+                    span.innerHTML = html;
+                    node.parentNode.replaceChild(span, node);
+                }
+            }
+        });
+    </script>
+    {% endif %}
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/js/bootstrap.bundle.min.js"></script>
