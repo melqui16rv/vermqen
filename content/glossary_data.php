@@ -28,6 +28,14 @@ return [
             'Chunk' => 'Fragmento o pedazo: porción pequeña de un bloque de datos que se procesa, transfiere o almacena de forma individual.'
         ]
     ],
+    'Procesamiento Streaming' => [
+        'term' => 'Procesamiento Streaming',
+        'definition' => 'Técnica de procesamiento de datos que permite manejar grandes volúmenes de información en tiempo real, procesando los datos a medida que llegan en lugar de esperar a que se complete la carga.'
+    ],
+    'objeto summary en el módulo de manejo de git' => [
+        'term' => 'Objeto Summary',
+        'definition' => 'Estructura de datos que contiene un resumen o descripción breve de un módulo, incluyendo su título, resumen, etiqueta y ruta de acceso.'
+    ],
     'dns_resolver' => [
         'term' => 'DNS Resolver',
         'definition' => 'Servidor intermedio que actúa como "agenda de contactos" para traducir nombres de dominio a direcciones IP.'
@@ -79,5 +87,98 @@ return [
     'DevOps' => [
         'term' => 'DevOps',
         'definition' => 'Cultura y conjunto de prácticas que unifican el desarrollo de software (Dev) y las operaciones de TI (Ops) para acortar el ciclo de vida del desarrollo y proporcionar entregas continuas con alta calidad.'
-    ]
+    ],
+    'Patron MVC' => [
+        'term' => 'Patrón MVC (Modelo-Vista-Controlador)',
+        'definition' => 'Arquitectura de software que separa una aplicación en tres componentes principales: Modelo (gestión de datos), Vista (interfaz de usuario) y Controlador (lógica de negocio y coordinación).'
+    ],
+    'ZIP' => [
+        'term' => 'ZIP',
+        'definition' => 'Formato de archivo que utiliza compresión para reducir el tamaño de los archivos y facilitar su almacenamiento o transferencia.'
+    ],
+    'frontend' => [
+        'term' => 'Frontend',
+        'definition' => 'Parte de una aplicación o sitio web que interactúa directamente con el usuario; la interfaz visual y de experiencia del usuario.'
+    ],
+    ' Query Scopes' => [
+        'term' => 'Query Scopes',
+        'definition' => 'Métodos predefinidos en un modelo de Eloquent que permiten reutilizar condiciones comunes en las consultas a la base de datos.'
+    ],
+    'Modelos de Eloquent (ORM)' => [
+        'term' => 'Modelos de Eloquent (ORM)',
+        'definition' => 'Sistema de mapeo objeto-relacional (ORM) integrado en Laravel que facilita la interacción con la base de datos a través de modelos PHP.'
+    ],
+    'métodos like/when '=> [
+        'term' => 'Métodos like/when',
+        'definition' => 'Funciones de Eloquent que permiten construir consultas dinámicas y condicionales de manera fluida.'
+    ],
+    'sistema de grillas/flexbox' => [
+        'term' => 'Sistema de grillas/flexbox',
+        'definition' => 'Técnicas de diseño CSS para crear layouts flexibles y responsivos en el frontend.'
+    ],
+    'grillas' => [
+        'term' => 'Grillas',
+        'definition' => 'Sistema de diseño basado en filas y columnas que facilita la organización y alineación de elementos en una página web.'
+    ],
+    'flexbox' => [
+        'term' => 'Flexbox',
+        'definition' => 'Modelo de diseño CSS que permite distribuir espacio entre elementos en una interfaz y alinear contenido de manera eficiente, incluso cuando su tamaño es desconocido o dinámico.'
+    ],
+'bootstrap' => [
+        'term' => 'Bootstrap',
+        'definition' => 'Framework de diseño web que proporciona estilos predefinidos y componentes para crear sitios web responsivos y modernos.'
+    ],
+    'TAILWIND' => [
+        'term' => 'Tailwind CSS',
+        'definition' => 'Framework de diseño para desarrollo web que se basa en el concepto de clases de utilidad.'
+    ],
+    'Hash'
+        => [
+            'term' => 'Hash',
+            'definition' => 'Valor alfanumérico generado por una función de hash que representa de manera única un conjunto de datos, utilizado para verificar la integridad o autenticidad de la información.'
+        ],
+        ' Función de hash ' => [
+            'term' => 'Función de Hash',
+            'definition' => 'Algoritmo que toma una entrada (o "mensaje") y devuelve un valor fijo de longitud, que parece aleatorio. Es utilizado para asegurar la integridad de los datos.'
+        ],
+    'hash SHA-256 ' => [
+        'term' => 'Hash SHA-256',
+        'definition' => 'Algoritmo de hash criptográfico que produce un valor de 256 bits (32 bytes) a partir de una entrada dada, utilizado para verificar la integridad de los datos.'
+    ],
+    'Umbrales de Clasificación' => [
+        'term' => 'Umbrales de Clasificación',
+        'definition' => 'Límites establecidos para determinar el nivel de sensibilidad o protección de la información.'
+    ],
+    'servicio SMTP' => [
+        'term' => 'Servicio SMTP',
+        'definition' => 'Protocolo estándar para enviar correos electrónicos a través de Internet.'
+    ],
+    'Tinker' => [
+        'term' => 'Tinker',
+        'definition' => 'Herramienta de línea de comandos de Laravel que permite interactuar con la aplicación y la base de datos de manera interactiva.'
+    ],
+    'Hostinger' => [
+        'term' => 'Hostinger',
+        'definition' => 'Proveedor de servicios de alojamiento web que ofrece hosting compartido, VPS y servicios relacionados.'
+    ],
+    'incidencia' => [
+        'term' => 'Incidencia',
+        'definition' => 'Evento o situación que interrumpe el funcionamiento normal de un servicio o sistema, o que tiene el potencial de hacerlo.'
+    ],
+    'campos fillable' => [
+        'term' => 'Campos Fillable',
+        'definition' => 'Propiedad en los modelos de Eloquent que define qué atributos pueden ser asignados masivamente (mass assignment) para proteger contra asignaciones no deseadas.'
+    ],
+    'kebab-case' => [
+        'term' => 'Kebab Case',
+        'definition' => 'Estilo de nomenclatura en el que las palabras están separadas por guiones bajos o guiones, y todas las letras son minúsculas.'
+    ],
+    'snake_case' => [
+        'term' => 'Snake Case',
+        'definition' => 'Estilo de nomenclatura en el que las palabras están separadas por guiones bajos y todas las letras son minúsculas.'
+    ],
+    'camelCase' => [
+        'term' => 'Camel Case',
+        'definition' => 'Estilo de nomenclatura en el que las palabras están unidas sin espacios, y cada palabra después de la primera comienza con mayúscula.'
+    ],
 ];
