@@ -23,11 +23,15 @@ return [
     'stream_chunk' => [
         'term' => 'Stream & Chunk',
         'definition' => 'Técnicas para procesar información por fragmentos pequeños (chunks) en lugar de cargar todo el archivo en la RAM.',
-        'sub_terms' => [
-            'Stream:técnica que transfiere información de forma continua en pedazos pequeños.',
-            'Chunk : porción pequeña de un bloque de datos que se procesa, transfiere o almacena de forma individual.'
-        ]
     ],
+                'Stream' =>[
+                    'term' => 'Stream',
+                    'definition' => 'Técnica que transfiere información de forma continua en pedazos pequeños.',
+                ],
+                'Chunk' => [
+                    'term' => 'Chunk',
+                    'definition' => 'Porción pequeña de un bloque de datos que se procesa, transfiere o almacena de forma individual.'
+                ],  
     'Procesamiento Streaming' => [
         'term' => 'Procesamiento Streaming',
         'definition' => 'Técnica de procesamiento de datos que permite manejar grandes volúmenes de información en tiempo real, procesando los datos a medida que llegan en lugar de esperar a que se complete la carga.'
@@ -202,7 +206,31 @@ return [
         'definition' => 'Biblioteca de JavaScript que permite crear gráficos interactivos y visualizaciones de datos en aplicaciones web.'
     ],
     'API RESTful' => [
-        'term' => 'API RESTful',
-        'definition' => 'Interfaz de programación de aplicaciones que sigue los principios de REST (Representational State Transfer) para permitir la comunicación entre sistemas a través de HTTP.'
+        'term' => 'API RESTFUL',
+        'definition' => 'Interfaz de programación de aplicaciones que sigue los principios  para permitir la comunicación entre sistemas a través de HTTP.'
     ],
+    'API' => [
+        'term' => 'API',
+        'definition' => 'Interfaz de programación de aplicaciones que permite la comunicación entre diferentes software o servicios.'
+    ],
+'REST' => [
+        'term' => 'REST',
+        'definition' => 'Estilo de arquitectura para diseñar servicios web que utilizan HTTP y se basan en recursos identificados por URLs.'
+    ],
+    'HTTP' => [
+        'term' => 'HTTP',
+        'definition' => 'Protocolo de transferencia de hipertexto utilizado para la comunicación entre clientes y servidores en la web.'
+    ],
+    'URL' => [
+        'term' => 'URL',
+        'definition' => 'Localizador uniforme de recursos; dirección que se utiliza para acceder a recursos en la web.'
+    ],
+'dominio' => [
+        'term' => 'Dominio',
+        'definition' => 'Nombre único que identifica un sitio web en Internet, utilizado para acceder a él mediante un navegador.'
+    ],
+    'IP' => [
+        'term' => 'IP',
+        'definition' => 'Protocolo de Internet; dirección numérica única asignada a cada dispositivo conectado a una red que utiliza el protocolo IP para la comunicación.'
+    ]
 ];
