@@ -401,7 +401,7 @@ window.moduloApp = (options = {}) => ({
   terminosGlosario: [],
   masVistos: [],
   tePuedenInteresar: [],
-  open: false,
+  open: true,
 
   init() {
     if (!this.apiBase) {
@@ -420,6 +420,9 @@ window.moduloApp = (options = {}) => ({
     }).catch(error => {
       console.error('moduloApp glossary load error:', error);
     });
+
+    // Lazy-load modules immediately on init to populate recommendations
+    this.fetchModules();
 
     // React to external search events (sidebar search)
     window.addEventListener('modulo-search', (e) => {

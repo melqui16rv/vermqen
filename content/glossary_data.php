@@ -232,5 +232,29 @@ return [
     'IP' => [
         'term' => 'IP',
         'definition' => 'Protocolo de Internet; dirección numérica única asignada a cada dispositivo conectado a una red que utiliza el protocolo IP para la comunicación.'
-    ]
+    ],
+    'rollback' => [
+        'term' => 'Rollback',
+        'definition' => 'Proceso de revertir cambios o actualizaciones a un estado anterior, comúnmente utilizado en bases de datos y sistemas de control de versiones.'
+    ],
+    'migraciones' => [
+        'term' => 'Migraciones',
+        'definition' => 'Sistema de control de versiones para bases de datos que permite definir y aplicar cambios en la estructura de la base de datos de manera incremental y reversible.'
+    ],
+    'reset' => [
+        'term' => 'Reset',
+        'definition' => 'Proceso de reiniciar o restaurar un sistema, aplicación o configuración a su estado original o predeterminado.'
+    ],
+    'flag' => [
+        'term' => 'Flag',
+        'definition' => 'Indicador o señal que se utiliza para marcar o señalar un estado, condición o acción específica en un sistema o proceso.'
+    ], 
+    'path' => [
+        'term' => 'Path',
+        'definition' => 'Ruta o dirección que indica la ubicación de un archivo o recurso dentro de un sistema de archivos o estructura de directorios.'
+    ],
+    'raps' => [
+        'term' => 'RAPS (Registro de Aprobación Presupuestal)',
+        'definition' => 'Sistema que permite a las entidades públicas registrar y gestionar la aprobación de recursos presupuestales para proyectos o actividades específicas.'
+    ],
 ];
