@@ -326,6 +326,13 @@
     searchInput.addEventListener('input', event => {
       event.stopImmediatePropagation();
       applySidebarFilter();
+      // Notify moduloApp about external search activity so it can shrink/expand
+      try {
+        const evt = new CustomEvent('modulo-search', { detail: { query: searchInput.value } });
+        window.dispatchEvent(evt);
+      } catch (e) {
+        // ignore
+      }
     });
     searchInput.addEventListener('focus', () => renderSuggestions(getMatches()));
     searchInput.addEventListener('keydown', event => {
@@ -368,6 +375,178 @@
   });
 
 })();
+
+window.moduloApp = (options = {}) => ({
+  apiBase: options.apiBase || '',
+  glossaryPath: options.glossaryPath || '',
+  modulos: [],
+  terminosGlosario: [],
+  masVistos: [],
+  tePuedenInteresar: [],
+  open: false,
+
+  init() {
+    if (!this.apiBase) {
+      console.warn('moduloApp: apiBase no está definido');
+      return;
+    }
+    // Load glossary immediately; modules are lazy-loaded on demand to save bandwidth.
+    fetch(`${this.apiBase}/glosario`, { credentials: 'same-origin' }).then(this.checkOk).then(async (glossaryResponse) => {
+      const glossaryArray = await glossaryResponse.json();
+      this.terminosGlosario = Array.isArray(glossaryArray)
+        ? glossaryArray.map(item => ({
+            termino: String(item.termino || '').trim(),
+            urlDefinicion: String(item.urlDefinicion || '').trim(),
+          })).filter(entry => entry.termino && entry.urlDefinicion)
+        : [];
+    }).catch(error => {
+      console.error('moduloApp glossary load error:', error);
+    });
+
+    // React to external search events (sidebar search)
+    window.addEventListener('modulo-search', (e) => {
+      try {
+        const q = (e && e.detail && String(e.detail.query || '') ) || '';
+        this.handleExternalSearch(q);
+      } catch (err) {
+        // ignore
+      }
+    });
+  },
+
+  searchQuery: '',
+  compactMode: false,
+
+  handleExternalSearch(query) {
+    this.searchQuery = String(query || '');
+    const q = this.searchQuery.trim();
+    if (q !== '') {
+      // Compress recommendations to save space while searching
+      this.compactMode = true;
+      this.open = false;
+      // Ensure we have module data to show filtered compact results
+      if ((!Array.isArray(this.modulos) || this.modulos.length === 0)) {
+        this.fetchModules();
+      }
+    } else {
+      this.compactMode = false;
+    }
+  },
+
+  toggleOpen() {
+    this.open = !this.open;
+    if (this.open && (!Array.isArray(this.modulos) || this.modulos.length === 0)) {
+      this.fetchModules();
+    }
+  },
+
+  async fetchModules() {
+    if (!this.apiBase) return;
+    try {
+      const resp = await fetch(`${this.apiBase}/modulos`, { credentials: 'same-origin' });
+      this.checkOk(resp);
+      const data = await resp.json();
+      this.modulos = Array.isArray(data) ? data : [];
+      this.updateSections();
+    } catch (err) {
+      console.error('fetchModules error', err);
+    }
+  },
+
+  compactItems() {
+    const q = String(this.searchQuery || '').toLowerCase().trim();
+    if (q === '') {
+      return Array.isArray(this.masVistos) ? this.masVistos.slice(0, 3) : [];
+    }
+
+    const list = Array.isArray(this.modulos) ? this.modulos : [];
+    const matches = list.filter(it => (String(it.titulo || '')).toLowerCase().includes(q));
+    if (matches.length > 0) return matches.slice(0, 3);
+    return Array.isArray(this.masVistos) ? this.masVistos.slice(0, 3) : [];
+  },
+
+  updateSections() {
+    const modules = Array.isArray(this.modulos) ? this.modulos : [];
+    const sortedByViews = [...modules].sort((a, b) => {
+      const scoreA = Number(a.vistas || 0);
+      const scoreB = Number(b.vistas || 0);
+      if (scoreA !== scoreB) return scoreB - scoreA;
+      return new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime();
+    });
+
+    this.masVistos = sortedByViews.slice(0, 3);
+
+    const recent = [...modules].sort((a, b) => new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime());
+    const topIds = new Set(this.masVistos.map(item => item._id));
+    this.tePuedenInteresar = recent.filter(item => !topIds.has(item._id)).slice(0, 3);
+  },
+
+  checkOk(response) {
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+    return response;
+  },
+
+  escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value;
+    return div.innerHTML;
+  },
+
+  buildRegex() {
+    const terms = Array.from(new Set(this.terminosGlosario.map(item => item.termino.trim()).filter(Boolean)));
+    if (terms.length === 0) {
+      return null;
+    }
+
+    const escaped = terms
+      .sort((a, b) => b.length - a.length)
+      .map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('|');
+
+    return new RegExp(`(?<![\\p{L}\\p{N}_])(${escaped})(?![\\p{L}\\p{N}_])`, 'giu');
+  },
+
+  procesarTextoGlosario(texto) {
+    if (typeof texto !== 'string' || texto.trim() === '') {
+      return '';
+    }
+
+    const safeText = this.escapeHtml(texto);
+    const regex = this.buildRegex();
+    if (!regex) {
+      return safeText;
+    }
+
+    const glossaryMap = this.terminosGlosario.reduce((map, item) => {
+      map[item.termino.toLowerCase()] = item.urlDefinicion;
+      return map;
+    }, {});
+
+    return safeText.replace(regex, (match) => {
+      const key = match.toLowerCase();
+      const url = glossaryMap[key];
+      if (!url) {
+        return match;
+      }
+      return `<a href="${url}" class="glossary-link">${match}</a>`;
+    });
+  },
+
+  irAModulo(modulo) {
+    if (!modulo || !modulo._id || !modulo.url) {
+      return;
+    }
+
+    fetch(`${this.apiBase}/modulos/${encodeURIComponent(modulo._id)}/click`, {
+      method: 'POST',
+      credentials: 'same-origin',
+    }).finally(() => {
+      window.location.href = modulo.url;
+    });
+  },
+});
 
 // Page loader
 (() => {

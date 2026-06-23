@@ -112,12 +112,16 @@
             const content = document.getElementById('main-content');
             if (!content) return;
 
-            const excluded = ['A', 'SCRIPT', 'STYLE', 'CODE', 'PRE', 'NAV', 'FOOTER', 'BUTTON', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION'];
+            const excluded = ['A', 'SCRIPT', 'STYLE', 'CODE', 'PRE', 'NAV', 'FOOTER', 'BUTTON', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION', 'H1', 'H2', 'H3'];
+            const excludeSelectors = ['.module-card-title', '.category-name', '.sidebar-module-link', '.module-card', '.category-card', '.category-title'];
             const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
                 acceptNode: (node) => {
                     const parent = node.parentElement;
                     if (!parent) return NodeFilter.FILTER_REJECT;
                     if (excluded.includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+                    for (const s of excludeSelectors) {
+                        if (parent.closest && parent.closest(s)) return NodeFilter.FILTER_REJECT;
+                    }
                     if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
                     return NodeFilter.FILTER_ACCEPT;
                 }

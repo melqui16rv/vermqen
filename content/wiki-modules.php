@@ -46,6 +46,7 @@ foreach ($categoryOrder as $category) {
 
         // Asegurar que el campo category siempre esté presente.
         $data['category'] = (string)($data['category'] ?? $category);
+        $data['__source_file'] = $file;
 
         $modules[$slug] = $data;
     }

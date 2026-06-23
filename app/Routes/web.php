@@ -7,12 +7,18 @@ use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 use Slim\Views\Twig;
 
-return static function (App $app, PageController $pageController, array $glossaryData): void {
+return static function (App $app, PageController $pageController, 
+    \App\Controllers\ApiController $apiController, array $glossaryData): void {
     
-    // 1. Ruta de Inicio
+    // 1. API pública para módulos y glosario
+    $app->get('/api/modulos', [$apiController, 'listModules']);
+    $app->post('/api/modulos/{id}/click', [$apiController, 'trackModuleClick']);
+    $app->get('/api/glosario', [$apiController, 'listGlossary']);
+
+    // 2. Ruta de Inicio
     $app->get('/', [$pageController, 'home']);
 
-    // 2. Ruta de Glosario
+    // 3. Ruta de Glosario
     $app->get('/glosario', function (Request $request, Response $response) use ($glossaryData) {
         $view    = Twig::fromRequest($request);
 

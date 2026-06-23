@@ -30,34 +30,95 @@
             </div>
           </div>
         </div>
+
+          <!-- Compact strip shown while searching to save vertical space -->
+          <div x-show="compactMode && !open" class="compact-search-strip d-flex gap-2 align-items-center mt-2" style="overflow:hidden">
+            <template x-for="m in compactItems()" :key="m._id">
+              <button type="button" @click="irAModulo(m)" class="btn btn-sm btn-light text-truncate" style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <span x-text="m.titulo"></span>
+              </button>
+            </template>
+            <div class="ms-auto d-flex gap-2">
+              <button type="button" @click="open = true" class="btn btn-sm btn-outline-primary">Mostrar</button>
+              <button type="button" @click="handleExternalSearch('')" class="btn btn-sm btn-outline-secondary">Limpiar</button>
+            </div>
+          </div>
       </section>
 
-      {% if popularModules is defined and popularModules %}
-      <section class="popular-modules-section mb-3" data-aos="fade-up" data-aos-delay="100">
-        <div class="glass-panel p-4">
-          <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
-            <div>
-              <h2 class="h4 mb-1">Módulos más vistos</h2>
-              <p class="text-secondary mb-0">Descubre los temas con mayor actividad dentro del wiki.</p>
-            </div>
-            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">Top 3</span>
-          </div>
-          <div class="row g-3">
-            {% for module in popularModules %}
-              <div class="col-md-6 col-lg-4">
-                <a href="{{ module.path }}" class="module-card popular-card p-4 h-100 d-block" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
-                  <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h3 class="module-card-title mb-0">{{ module.title }}</h3>
-                    <span class="badge bg-secondary bg-opacity-15 text-secondary">{{ module.score }}</span>
-                  </div>
-                  <p class="text-secondary small mb-0">Ir al módulo más consultado</p>
-                </a>
+      <section x-data="moduloApp({ apiBase: '{{ assetBase }}/api', glossaryPath: '{{ glossaryPath }}' })" x-init="init()" class="module-suggestions-section mb-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="glass-panel p-2 p-md-4">
+          <div class="d-flex align-items-center justify-content-between gap-3 mb-2">
+            <div class="d-flex align-items-center gap-3">
+              <button type="button" @click="toggleOpen()" class="btn btn-sm btn-outline-secondary" aria-expanded="false" x-bind:aria-expanded="open">
+                <i class="bi" x-bind:class="open ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                <span class="ms-2 d-none d-md-inline">Recomendaciones</span>
+              </button>
+              <div class="d-none d-md-flex align-items-center gap-2 small text-secondary">
+                <template x-for="m in masVistos.slice(0,2)" :key="m._id">
+                  <span x-text="m.titulo" class="badge bg-secondary bg-opacity-10 text-secondary"></span>
+                </template>
               </div>
-            {% endfor %}
+            </div>
+            <div class="text-end">
+              <small class="text-secondary">Mostrar módulos más vistos y sugeridos</small>
+            </div>
+          </div>
+
+          <div x-show="open" x-transition class="mt-3">
+            <div class="row g-4">
+              <template x-for="modulo in masVistos" :key="modulo._id">
+                <div class="col-md-6 col-lg-4">
+                  <button type="button" @click="irAModulo(modulo)" class="module-card popular-card p-3 h-100 d-flex flex-column text-start" aria-label="Abrir módulo más visto">
+                    <div class="d-flex align-items-start justify-content-between mb-2 gap-2">
+                      <h3 class="module-card-title mb-0" x-text="modulo.titulo"></h3>
+                      <span class="badge bg-secondary bg-opacity-15 text-secondary" x-text="modulo.vistas + ' vistas'"></span>
+                    </div>
+                    <p class="text-secondary small mb-3" x-html="procesarTextoGlosario(modulo.descripcion)"></p>
+                    <span class="badge bg-primary bg-opacity-10 text-primary mt-auto align-self-start">Top 3</span>
+                  </button>
+                </div>
+              </template>
+
+              <template x-if="masVistos.length === 0">
+                <div class="col-12 text-center text-secondary">
+                  <p>Cargando módulos más vistos...</p>
+                </div>
+              </template>
+            </div>
+
+            <div class="row g-4 mt-3">
+              <div class="col-12">
+                <div class="d-flex align-items-center justify-content-between gap-3 mb-2">
+                  <div>
+                    <h2 class="h6 mb-1">Módulos que te pueden interesar</h2>
+                    <p class="text-secondary mb-0 small">Últimos módulos añadidos, excluyendo los más vistos.</p>
+                  </div>
+                  <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle">Novedades</span>
+                </div>
+              </div>
+
+              <template x-for="modulo in tePuedenInteresar" :key="modulo._id">
+                <div class="col-md-6 col-lg-4">
+                  <button type="button" @click="irAModulo(modulo)" class="module-card suggestion-card p-3 h-100 d-flex flex-column text-start" aria-label="Abrir módulo sugerido">
+                    <div class="d-flex align-items-start justify-content-between mb-2 gap-2">
+                      <h3 class="module-card-title mb-0" x-text="modulo.titulo"></h3>
+                      <span class="badge bg-success bg-opacity-15 text-success" x-text="new Date(modulo.fechaCreacion).toLocaleDateString('es-ES')"></span>
+                    </div>
+                    <p class="text-secondary small mb-3" x-html="procesarTextoGlosario(modulo.descripcion)"></p>
+                    <span class="badge bg-info bg-opacity-10 text-info mt-auto align-self-start">Reciente</span>
+                  </button>
+                </div>
+              </template>
+
+              <template x-if="tePuedenInteresar.length === 0">
+                <div class="col-12 text-center text-secondary">
+                  <p>Cargando sugerencias recientes...</p>
+                </div>
+              </template>
+            </div>
           </div>
         </div>
       </section>
-      {% endif %}
 
       <section class="categories-showcase mb-3" data-aos="fade-up" data-aos-delay="150">
         <div class="categories-header">

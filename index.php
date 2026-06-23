@@ -53,10 +53,12 @@ $twig->getEnvironment()->addGlobal('glossaryData', $glossaryData);
 $app->add(TwigMiddleware::create($app, $twig));
 
 $contentRepository = new ContentRepository(__DIR__ . '/content');
+$clickStorage = new App\Storage\ModuleClickStorage(__DIR__ . '/storage/module_clicks.json');
 $pageController = new PageController($twig, $contentRepository);
+$apiController = new App\Controllers\ApiController($twig, $contentRepository, $clickStorage, $glossaryData);
 
 // Invocación directa del archivo de rutas
-(require __DIR__ . '/app/Routes/web.php')($app, $pageController, $glossaryData);
+(require __DIR__ . '/app/Routes/web.php')($app, $pageController, $apiController, $glossaryData);
 
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
