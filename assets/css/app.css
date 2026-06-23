@@ -1231,11 +1231,18 @@ body.light-mode .sidebar-module-link:hover {
 
 .glossary-link {
   color: #8b5cf6;
-  text-decoration: underline dotted;
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(139, 92, 246, 0.9);
+  background: rgba(139, 92, 246, 0.08);
+  padding: 0 0.1rem;
+  border-radius: 0.2rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .glossary-link:hover {
-  color: #d8b4fe;
+  color: #7c3aed;
+  background: rgba(139, 92, 246, 0.16);
 }
 
 /* ────── CATEGORÍAS SHOWCASE ──────── */

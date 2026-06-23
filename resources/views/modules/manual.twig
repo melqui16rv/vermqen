@@ -107,7 +107,7 @@
            {% if step.image %}
         <div class="col-lg-5">
         <img
-    src="{{ step.image }}"
+    src="{{ step.image starts with '/' ? assetBase ~ step.image : step.image }}"
     alt="{{ step.label }}"
     class="img-fluid rounded-3 border border-secondary-subtle shadow-sm w-100"
     style="

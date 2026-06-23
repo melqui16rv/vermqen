@@ -24,8 +24,8 @@ return [
         'term' => 'Stream & Chunk',
         'definition' => 'Técnicas para procesar información por fragmentos pequeños (chunks) en lugar de cargar todo el archivo en la RAM.',
         'sub_terms' => [
-            'Stream' => 'Flujo de datos: técnica que transfiere información de forma continua en pedazos pequeños.',
-            'Chunk' => 'Fragmento o pedazo: porción pequeña de un bloque de datos que se procesa, transfiere o almacena de forma individual.'
+            'Stream:técnica que transfiere información de forma continua en pedazos pequeños.',
+            'Chunk : porción pequeña de un bloque de datos que se procesa, transfiere o almacena de forma individual.'
         ]
     ],
     'Procesamiento Streaming' => [
@@ -197,4 +197,5 @@ return [
         'term' => 'Mapear',
         'definition' => 'Proceso de establecer una correspondencia entre dos conjuntos de datos o estructuras, como mapear campos de un formulario a columnas de una base de datos.'
     ],
+
 ];
