@@ -6,7 +6,7 @@ return [
     'dashboard' => [
         'term' => 'Dashboard',
         'definition' => 'Interfaz visual que reúne, organiza y presenta datos clave y métricas de rendimiento en tiempo real.',
-        'aliases' => ['Cuadro de mando', 'Panel de control', 'Tablero de control', 'Panel ejecutivo']
+        'Tambien conocido como' => ['Cuadro de mando', 'Panel de control', 'Tablero de control', 'Panel ejecutivo']
     ],
     'facade' => [
         'term' => 'Storage Facade',
@@ -151,7 +151,7 @@ return [
         ],
         ' Función de hash ' => [
             'term' => 'Función de Hash',
-            'definition' => 'Algoritmo que toma una entrada (o "mensaje") y devuelve un valor fijo de longitud, que parece aleatorio. Es utilizado para asegurar la integridad de los datos.'
+            'definition' => 'Algoritmo que toma una entrada ("mensaje") y devuelve un valor fijo de longitud, que parece aleatorio. Es utilizado para asegurar la integridad de los datos.'
         ],
     'hash SHA-256 ' => [
         'term' => 'Hash SHA-256',
@@ -256,5 +256,22 @@ return [
     'raps' => [
         'term' => 'RAPS (Registro de Aprobación Presupuestal)',
         'definition' => 'Sistema que permite a las entidades públicas registrar y gestionar la aprobación de recursos presupuestales para proyectos o actividades específicas.'
+    ],
+    'framework' => [
+        'term' => 'Framework',
+        'definition' => 'Conjunto de herramientas, bibliotecas y convenciones que facilitan el desarrollo de aplicaciones al proporcionar una estructura y funcionalidades predefinidas.'
+        
+    ],
+    'laravel' => [
+        'term' => 'Laravel',
+        'definition' => 'Framework de desarrollo web en PHP que sigue el patrón MVC y proporciona herramientas y características para construir aplicaciones web de manera eficiente.'
+    ],
+    'ORM' => [
+        'term' => 'ORM (Object-Relational Mapping)',
+        'definition' => 'Técnica de programación que permite mapear objetos de un lenguaje de programación a tablas de una base de datos relacional, facilitando la interacción con la base de datos.'
+    ],
+    'ORM Eloquent' => [
+        'term' => 'ORM Eloquent',
+        'definition' => 'Implementación del patrón ORM en Laravel que permite interactuar con la base de datos utilizando modelos y relaciones entre ellos.'
     ],
 ];
