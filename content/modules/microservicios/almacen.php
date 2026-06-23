@@ -40,10 +40,17 @@ return [
             'description' => 'Módulo principal que consume este microservicio para gestión operativa de activos.',
         ],
     ],
+    "CFPI" => [
+        [
+            'label'       => 'CFPI',
+            'slug'        => 'cfpi',
+            'description' => 'Módulo de control de fichas técnicas y reportes fotográficos, que se integra con el microservicio Almacén para la gestión de inventario.',
+        ],
+    ],
     'architecture_docs' => [
         [
             'title'       => 'Arquitectura del Microservicio Integrado',
-            'description' => 'Almacén opera como un microservicio dependiente del módulo principal **Ciudad Verde**. Por ello, mantiene estrictamente la estructura de carpetas de su módulo padre: sus controladores residen bajo `app/Http/Controllers/CiudadVerde/Almacen`, sus modelos en `app/Models/CiudadVerde/Almacen` y sus vistas en `resources/views/ciudad_verde/almacen`. Esta práctica garantiza que los microservicios mantengan la cohesión del dominio al que pertenecen sin fragmentar el monolito modular.',
+            'description' => 'Almacén opera como un microservicio dependiente del módulo principal "Ciudad Verde". Por ello, mantiene estrictamente la estructura de carpetas de su módulo padre: sus controladores residen bajo `app/Http/Controllers/CiudadVerde/Almacen`, sus modelos en `app/Models/CiudadVerde/Almacen` y sus vistas en `resources/views/ciudad_verde/almacen`. Esta práctica garantiza que los microservicios mantengan la cohesión del dominio al que pertenecen sin fragmentar el monolito modular.',
         ],
         [
             'title'       => 'Procesamiento de Inventario en Tiempo Real',

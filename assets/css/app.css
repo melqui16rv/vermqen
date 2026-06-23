@@ -47,6 +47,9 @@ body {
 .site-shell {
   position: relative;
   z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: linear-gradient(180deg, rgba(15, 20, 32, 0.78) 0%, rgba(9, 11, 16, 0.88) 45%, rgba(9, 11, 16, 0.95) 100%);
 }
 
@@ -1174,6 +1177,7 @@ body.light-mode .sidebar-module-link:hover {
   grid-template-columns: minmax(0, 1fr) 320px;
   gap: 2rem;
   align-items: start;
+  flex: 1;
 }
 
 .sidebar-right {

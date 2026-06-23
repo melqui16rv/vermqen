@@ -175,7 +175,7 @@
 
                     if (isValidTermBoundary(originalText, termStart, termLength)) {
                         const matchedText = originalText.slice(termStart, termStart + termLength);
-                        html += `<a href="${glossaryPath}#glossary-${anchor}" class="glossary-link" target="_blank" rel="noopener noreferrer">${matchedText}</a>`;
+                        html += `<a href="${glossaryPath}#glossary-${anchor}" class="glossary-link">${matchedText}</a>`;
                         cursor = termStart + termLength;
                     } else {
                         html += originalText[cursor];

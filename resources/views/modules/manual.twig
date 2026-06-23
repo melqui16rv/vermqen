@@ -20,6 +20,21 @@
   </section>
   {# ── Glosario Interactivo (Nuevo) ────────────────────────────────── #}
   {% if module.glossary %}
+    {% set glossaryTermMap = {} %}
+    {% for glossaryItem in glossaryData %}
+      {% set glossaryTermMap = glossaryTermMap|merge({ (glossaryItem.term|lower): glossaryItem.anchor }) %}
+      {% if glossaryItem.aliases is defined and glossaryItem.aliases is iterable %}
+        {% for alias in glossaryItem.aliases %}
+          {% set glossaryTermMap = glossaryTermMap|merge({ (alias|lower): glossaryItem.anchor }) %}
+        {% endfor %}
+      {% endif %}
+      {% if glossaryItem.sub_terms is defined and glossaryItem.sub_terms is iterable %}
+        {% for subTerm in glossaryItem.sub_terms %}
+          {% set glossaryTermMap = glossaryTermMap|merge({ (subTerm|lower): glossaryItem.anchor }) %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+
     <section class="mb-4" data-aos="fade-in" data-aos-delay="50">
       <details class="glass-panel p-4">
         <summary class="h5 mb-0 d-flex align-items-center gap-2 cursor-pointer">
@@ -28,8 +43,20 @@
         <div class="mt-3 border-top pt-3">
           <div class="row g-3">
             {% for item in module.glossary.terms %}
+              {% set lookupKey = item.term|lower %}
+              {% set anchor = glossaryTermMap[lookupKey] ?? null %}
               <div class="col-md-6">
-                <strong>{{ item.term }}:</strong> <span class="text-secondary">{{ item.definition }}</span>
+                <strong>
+                  {% if anchor %}
+                    <a href="{{ glossaryPath }}#glossary-{{ anchor }}" target="_blank" rel="noopener noreferrer" class="glossary-link-small">
+                      {{ item.term }}
+                    </a>
+                  {% else %}
+                    {{ item.term }}
+                  {% endif %}
+                  :
+                </strong>
+                <span class="text-secondary">{{ item.definition }}</span>
               </div>
             {% endfor %}
           </div>
@@ -336,7 +363,7 @@
               <code class="code-chip ms-auto text-warning">{{ step.path }}</code>
             </div>
             {# Descripción #}
-            <p class="text-secondary mb-2 small">{{ step.description|raw }}</p>
+            <p class="text-secondary mb-2 small">{{ step.description|replace({ 'src="/assets/': 'src="'~assetBase~'/assets/', "src='/assets/": "src='"~assetBase~'/assets/' })|raw }}</p>
             {# Ejemplo de código #}
             {% if step.example %}
               <pre class="mb-0 p-3 rounded-2 border border-secondary-subtle small"
@@ -415,7 +442,7 @@
         <div class="icon-pill"><i class="bi bi-database-exclamation text-danger"></i></div>
         <h2 class="h5 mb-0 text-danger">{{ module.refresh_command.title }}</h2>
       </div>
-      <p class="text-secondary mb-4">{{ module.refresh_command.description|raw }}</p>
+      <p class="text-secondary mb-4">{{ module.refresh_command.description|replace({ 'src="/assets/': 'src="'~assetBase~'/assets/', "src='/assets/": "src='"~assetBase~'/assets/' })|raw }}</p>
 
       {% if module.refresh_command.steps %}
         <div class="d-flex flex-column gap-3 mb-4">

@@ -1,84 +1,207 @@
 {% extends "layouts/base.twig" %}
 
 {% block content %}
-<div x-data="{ search: '' }" class="container-fluid" data-aos="fade-up">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 fw-bold mb-0">Glosario de términos</h1>
-        <a href="#" onclick="history.back(); return false;" class="btn btn-link text-secondary">
-            Volver a la página anterior
-        </a>
+<div class="container-fluid glossary-page" data-aos="fade-up">
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h3 fw-bold mb-0">Glosario de términos</h1>
+            <p class="text-secondary small mb-0">Consulta los términos más relevantes y vuelve a la página principal cuando quieras.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ homePath }}" class="btn btn-outline-secondary btn-sm">Inicio</a>
+            <a href="#" onclick="history.back(); return false;" class="btn btn-link text-secondary btn-sm">
+                Volver atrás
+            </a>
+        </div>
     </div>
 
     <div class="mb-4">
-        <input x-model="search" type="text" placeholder="Busca aquí el término" 
+        <input id="glossary-search" type="text" placeholder="Busca aquí el término"
                class="form-control glossary-search border-secondary shadow-none">
     </div>
 
-    <div class="glossary-grid">
-        {% for key, item in glossary %}
-        <div class="glossary-card" x-show="'{{ item.term|lower }}'.includes(search.toLowerCase())">
-            <article id="glossary-{{ item.anchor }}" class="glass-panel p-3 h-100">
-                <h5 class="glossary-term mb-2">{{ item.term }}</h5>
-                <p class="glossary-def small mb-2">{{ item.definition }}</p>
-
-                {% if item.aliases %}
-                    <small class="d-block glossary-meta"><strong>Alias:</strong> {{ item.aliases|join(', ') }}</small>
-                {% endif %}
-
-                {% if item.sub_terms %}
-                    <small class="d-block glossary-meta"><strong>Sub-términos:</strong> {{ item.sub_terms|join(', ') }}</small>
-                {% endif %}
-            </article>
+    <div class="glossary-grid" id="glossary-grid">
+        <div class="glossary-empty text-secondary d-none" id="glossary-empty">
+            No se encontraron términos que coincidan con la búsqueda.
         </div>
-        {% endfor %}
+    </div>
+
+    <div class="glossary-pagination d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 mt-4">
+        <div class="text-secondary small">
+            Mostrando <strong id="glossary-current-count">0</strong> de <strong id="glossary-total-count">0</strong> términos.
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <button id="glossary-prev" type="button" class="btn btn-outline-light btn-sm">Anterior</button>
+            <span class="text-secondary small">Página <strong id="glossary-page">1</strong> de <strong id="glossary-total-pages">1</strong></span>
+            <button id="glossary-next" type="button" class="btn btn-outline-light btn-sm">Siguiente</button>
+        </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    (function() {
+        const rawGlossary = Object.values({{ glossary|json_encode|raw }});
+        const glossary = rawGlossary.slice().sort((a, b) => a.term.localeCompare(b.term, 'es', { sensitivity: 'base' }));
+        const state = {
+            glossary,
+            search: '',
+            page: 1,
+            pageSize: 12,
+        };
+
+        const searchInput = document.getElementById('glossary-search');
+        const grid = document.getElementById('glossary-grid');
+        const emptyMessage = document.getElementById('glossary-empty');
+        const prevButton = document.getElementById('glossary-prev');
+        const nextButton = document.getElementById('glossary-next');
+        const pageLabel = document.getElementById('glossary-page');
+        const totalPagesLabel = document.getElementById('glossary-total-pages');
+        const currentCount = document.getElementById('glossary-current-count');
+        const totalCount = document.getElementById('glossary-total-count');
+
+        function getFiltered() {
+            const query = state.search.trim().toLowerCase();
+            if (!query) {
+                return state.glossary;
+            }
+            return state.glossary.filter(item => item.term.toLowerCase().includes(query));
+        }
+
+        function getTotalPages(filtered) {
+            return Math.max(1, Math.ceil(filtered.length / state.pageSize));
+        }
+
+        function render() {
+            const filtered = getFiltered();
+            const totalPages = getTotalPages(filtered);
+            if (state.page > totalPages) state.page = totalPages;
+
+            const start = (state.page - 1) * state.pageSize;
+            const pageItems = filtered.slice(start, start + state.pageSize);
+
+            grid.innerHTML = '';
+            if (pageItems.length === 0) {
+                emptyMessage.classList.remove('d-none');
+            } else {
+                emptyMessage.classList.add('d-none');
+                pageItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'glossary-card';
+                    card.innerHTML = `
+                        <article class="glass-panel p-4 h-100">
+                            <h5 class="glossary-term mb-3">${item.term}</h5>
+                            <p class="glossary-def small mb-3">${item.definition}</p>
+                            ${item.aliases && item.aliases.length ? `<small class="d-block glossary-meta mb-2"><strong>Alias:</strong> ${item.aliases.join(', ')}</small>` : ''}
+                            ${item.sub_terms && Object.keys(item.sub_terms).length ? `<small class="d-block glossary-meta"><strong>Sub-términos:</strong> ${Object.keys(item.sub_terms).join(', ')}</small>` : ''}
+                        </article>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            grid.appendChild(emptyMessage);
+
+            pageLabel.textContent = state.page;
+            totalPagesLabel.textContent = totalPages;
+            currentCount.textContent = pageItems.length;
+            totalCount.textContent = filtered.length;
+            prevButton.disabled = state.page <= 1;
+            nextButton.disabled = state.page >= totalPages;
+        }
+
+        searchInput.addEventListener('input', () => {
+            state.search = searchInput.value;
+            state.page = 1;
+            render();
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (state.page > 1) {
+                state.page -= 1;
+                render();
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            const totalPages = getTotalPages(getFiltered());
+            if (state.page < totalPages) {
+                state.page += 1;
+                render();
+            }
+        });
+
+        render();
+
         const hash = window.location.hash;
         if (hash && hash.startsWith('#glossary-')) {
-            const target = document.querySelector(hash);
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                target.classList.add('highlight-pulse');
-                setTimeout(() => target.classList.remove('highlight-pulse'), 3000);
-            }
+            setTimeout(() => {
+                const target = document.querySelector(hash);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    target.classList.add('highlight-pulse');
+                    setTimeout(() => target.classList.remove('highlight-pulse'), 3000);
+                }
+            }, 50);
         }
-    });
+    })();
 </script>
 
 <style>
+    [x-cloak] { display: none !important; }
+
     .highlight-pulse {
         transition: outline 0.5s ease;
         outline: 3px solid #8e44ad;
         border-radius: 8px;
     }
 
+    .glossary-page {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
     .glossary-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-        max-height: calc(5 * 140px); /* show ~5 rows */
-        overflow: auto;
-        padding-right: 0.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .glossary-card {
+        min-height: 180px;
     }
 
     .glossary-card article {
-        min-height: 120px;
+        min-height: 220px;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
+        padding: 1.5rem;
     }
 
     .glossary-search {
         background: #0b0b0b;
         color: #ffffff;
+        min-height: 3rem;
+        border-radius: 0.85rem;
+        padding: 0.75rem 1rem;
     }
     .glossary-search::placeholder { color: #cfcfcf; opacity: 1; }
 
-    .glossary-term { color: #0f172a; font-weight: 600; }
+    .glossary-term { color: #0f172a; font-weight: 700; font-size: 1.05rem; }
     .glossary-def, .glossary-meta { color: #475569; }
+
+    .glossary-pagination button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .glossary-empty {
+        grid-column: 1 / -1;
+        padding: 2rem;
+        text-align: center;
+    }
 
     /* Dark mode / solid contrast tweaks */
     body:not(.light-mode) .glossary-term { color: #f8fafc; }

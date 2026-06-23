@@ -136,9 +136,9 @@ return [
         'term' => 'Bootstrap',
         'definition' => 'Framework de diseño web que proporciona estilos predefinidos y componentes para crear sitios web responsivos y modernos.'
     ],
-    'TAILWIND' => [
-        'term' => 'Tailwind CSS',
-        'definition' => 'Framework de diseño para desarrollo web que se basa en el concepto de clases de utilidad.'
+      'CSV' => [
+        'term' => 'CSV (Comma-Separated Values)',
+        'definition' => 'Formato de archivo que almacena datos tabulares en texto plano, donde cada línea representa un registro y los valores están separados por comas.'
     ],
     'Hash'
         => [
@@ -197,5 +197,12 @@ return [
         'term' => 'Mapear',
         'definition' => 'Proceso de establecer una correspondencia entre dos conjuntos de datos o estructuras, como mapear campos de un formulario a columnas de una base de datos.'
     ],
-
+    'Chart.js' => [
+        'term' => 'Chart.js',
+        'definition' => 'Biblioteca de JavaScript que permite crear gráficos interactivos y visualizaciones de datos en aplicaciones web.'
+    ],
+    'API RESTful' => [
+        'term' => 'API RESTful',
+        'definition' => 'Interfaz de programación de aplicaciones que sigue los principios de REST (Representational State Transfer) para permitir la comunicación entre sistemas a través de HTTP.'
+    ],
 ];

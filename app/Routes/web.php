@@ -37,6 +37,7 @@ return static function (App $app, PageController $pageController, array $glossar
             'assetBase'    => $basePath,
             'navigation'   => [],
             'currentSlug'  => null,
+            'showFooter'   => false,
         ]);
     });
 
