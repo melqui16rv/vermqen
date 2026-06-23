@@ -108,11 +108,22 @@
             nextButton.disabled = state.page >= totalPages;
         }
 
-        searchInput.addEventListener('input', () => {
+        // Debounce para evitar renderizados excesivos mientras el usuario escribe
+        const debounce = (fn, wait = 200) => {
+            let t = null;
+            return (...args) => {
+                if (t) clearTimeout(t);
+                t = setTimeout(() => fn.apply(this, args), wait);
+            };
+        };
+
+        const onGlossaryInput = debounce(() => {
             state.search = searchInput.value;
             state.page = 1;
             render();
-        });
+        }, 220);
+
+        searchInput.addEventListener('input', onGlossaryInput);
 
         prevButton.addEventListener('click', () => {
             if (state.page > 1) {

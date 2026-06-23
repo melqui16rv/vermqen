@@ -72,49 +72,256 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const glossaryPath = '{{ glossaryPath }}';
-            const glossaryData = {{ glossaryData|json_encode|raw }};
+            const apiGlossary = '{{ assetBase }}/api/glosario';
             const glossaryMap = {};
 
-            Object.values(glossaryData).forEach(item => {
-                const anchor = item.anchor;
-                if (!anchor) return;
-                const term = String(item.term || '').trim().toLowerCase();
-                if (term) {
-                    glossaryMap[term] = anchor;
-                    const compact = term.replace(/\s+/g, '').replace(/[^a-z0-9]/gi, '');
-                    if (compact && compact !== term) glossaryMap[compact] = anchor;
-                }
-                if (Array.isArray(item.aliases)) {
-                    item.aliases.forEach(alias => {
-                        const aliasText = String(alias || '').trim().toLowerCase();
-                        if (aliasText) {
+            // Lazy-load glossary via API to avoid embedding large data on every page
+            fetch(apiGlossary, { credentials: 'same-origin' }).then(resp => {
+                if (!resp.ok) throw new Error('Glossary fetch failed');
+                return resp.json();
+            }).then(items => {
+                if (!Array.isArray(items)) return;
+                items.forEach(item => {
+                    const anchor = String(item._id || '').trim();
+                    if (!anchor) return;
+                    const term = String(item.termino || '').trim().toLowerCase();
+                    if (term) {
+                        glossaryMap[term] = anchor;
+                        const compact = term.replace(/\s+/g, '').replace(/[^a-z0-9]/gi, '');
+                        if (compact && compact !== term) glossaryMap[compact] = anchor;
+                    }
+                    if (Array.isArray(item.aliases)) {
+                        item.aliases.forEach(a => {
+                            const aliasText = String(a || '').trim().toLowerCase();
+                            if (!aliasText) return;
                             glossaryMap[aliasText] = anchor;
                             const compactA = aliasText.replace(/\s+/g, '').replace(/[^a-z0-9]/gi, '');
                             if (compactA && compactA !== aliasText) glossaryMap[compactA] = anchor;
-                        }
-                    });
-                }
-                if (item.sub_terms && typeof item.sub_terms === 'object') {
-                    Object.keys(item.sub_terms).forEach(subTerm => {
-                        const subText = String(subTerm || '').trim().toLowerCase();
-                        if (subText) {
+                        });
+                    }
+                    if (item.sub_terms && typeof item.sub_terms === 'object') {
+                        Object.keys(item.sub_terms).forEach(subTerm => {
+                            const subText = String(subTerm || '').trim().toLowerCase();
+                            if (!subText) return;
                             glossaryMap[subText] = anchor;
                             const compactS = subText.replace(/\s+/g, '').replace(/[^a-z0-9]/gi, '');
                             if (compactS && compactS !== subText) glossaryMap[compactS] = anchor;
+                        });
+                    }
+                });
+
+                const terms = Object.keys(glossaryMap).sort((a, b) => b.length - a.length);
+                if (terms.length === 0) return;
+
+                const content = document.getElementById('main-content');
+                if (!content) return;
+
+                const excluded = ['A', 'SCRIPT', 'STYLE', 'CODE', 'PRE', 'NAV', 'FOOTER', 'BUTTON', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION', 'H1', 'H2', 'H3'];
+                const excludeSelectors = ['.module-card-title', '.category-name', '.sidebar-module-link', '.module-card', '.category-card', '.category-title'];
+                const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
+                    acceptNode: (node) => {
+                        const parent = node.parentElement;
+                        if (!parent) return NodeFilter.FILTER_REJECT;
+                        if (excluded.includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+                        for (const s of excludeSelectors) {
+                            if (parent.closest && parent.closest(s)) return NodeFilter.FILTER_REJECT;
+                        }
+                        if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                });
+
+                const isWordChar = char => /[A-Za-z0-9_]/.test(char);
+                const isUpper = char => /[A-ZÁÉÍÓÚÜÑ]/.test(char);
+                const isLower = char => /[a-záéíóúüñ]/.test(char);
+
+                const isValidTermBoundary = (text, start, length) => {
+                    const before = start > 0 ? text[start - 1] : '';
+                    const after = start + length < text.length ? text[start + length] : '';
+                    const beforeWord = isWordChar(before);
+                    const afterWord = isWordChar(after);
+
+                    if (!beforeWord && !afterWord) return true;
+                    if (!beforeWord && after && isUpper(after)) return true;
+                    if (before && isLower(before) && after && isUpper(after)) return true;
+                    if (before && isLower(before) && !afterWord && after === '') return true;
+                    return false;
+                };
+
+                let node;
+                while (node = walker.nextNode()) {
+                    const originalText = node.nodeValue;
+                    const lowerText = originalText.toLowerCase();
+                    let cursor = 0;
+                    let html = '';
+
+                    while (cursor < originalText.length) {
+                        let nextMatch = null;
+                        let nextTerm = null;
+
+                        for (const term of terms) {
+                            const index = lowerText.indexOf(term, cursor);
+                            if (index === -1) continue;
+                            if (nextMatch === null || index < nextMatch || (index === nextMatch && term.length > nextTerm.length)) {
+                                nextMatch = index;
+                                nextTerm = term;
+                            }
+                        }
+
+                        if (nextMatch === null) {
+                            html += originalText.slice(cursor);
+                            break;
+                        }
+
+                        if (nextMatch > cursor) {
+                            html += originalText.slice(cursor, nextMatch);
+                        }
+
+                        const termStart = nextMatch;
+                        const termLength = nextTerm.length;
+                        const anchor = glossaryMap[nextTerm];
+
+                        if (isValidTermBoundary(originalText, termStart, termLength)) {
+                            const matchedText = originalText.slice(termStart, termStart + termLength);
+                            html += `<a href="${glossaryPath}#glossary-${anchor}" class="glossary-link">${matchedText}</a>`;
+                            cursor = termStart + termLength;
+                        } else {
+                            html += originalText[cursor];
+                            cursor += 1;
+                        }
+                    }
+
+                    if (html !== originalText) {
+                        const span = document.createElement('span');
+                        span.innerHTML = html;
+                        node.parentNode.replaceChild(span, node);
+                    }
+                }
+            }).catch(err => {
+                // Fallback: if API fails, try using embedded glossaryData (if present)
+                try {
+                    const rawGloss = {{ glossaryData|json_encode|raw }};
+                    const fallbackMap = {};
+                    Object.values(rawGloss).forEach(item => {
+                        const anchor = item.anchor;
+                        if (!anchor) return;
+                        const term = String(item.term || '').trim().toLowerCase();
+                        if (term) {
+                            fallbackMap[term] = anchor;
+                            const compact = term.replace(/\s+/g, '').replace(/[^a-z0-9]/gi, '');
+                            if (compact && compact !== term) fallbackMap[compact] = anchor;
+                        }
+                        if (Array.isArray(item.aliases)) {
+                            item.aliases.forEach(alias => {
+                                const aliasText = String(alias || '').trim().toLowerCase();
+                                if (aliasText) {
+                                    fallbackMap[aliasText] = anchor;
+                                    const compactA = aliasText.replace(/\s+/g, '').replace(/[^a-z0-9]/gi, '');
+                                    if (compactA && compactA !== aliasText) fallbackMap[compactA] = anchor;
+                                }
+                            });
+                        }
+                        if (item.sub_terms && typeof item.sub_terms === 'object') {
+                            Object.keys(item.sub_terms).forEach(subTerm => {
+                                const subText = String(subTerm || '').trim().toLowerCase();
+                                if (subText) {
+                                    fallbackMap[subText] = anchor;
+                                    const compactS = subText.replace(/\s+/g, '').replace(/[^a-z0-9]/gi, '');
+                                    if (compactS && compactS !== subText) fallbackMap[compactS] = anchor;
+                                }
+                            });
                         }
                     });
+
+                    const terms = Object.keys(fallbackMap).sort((a, b) => b.length - a.length);
+                    if (terms.length === 0) return;
+                    const content = document.getElementById('main-content');
+                    if (!content) return;
+                    const excluded = ['A', 'SCRIPT', 'STYLE', 'CODE', 'PRE', 'NAV', 'FOOTER', 'BUTTON', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION', 'H1', 'H2', 'H3'];
+                    const excludeSelectors = ['.module-card-title', '.category-name', '.sidebar-module-link', '.module-card', '.category-card', '.category-title'];
+                    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
+                        acceptNode: (node) => {
+                            const parent = node.parentElement;
+                            if (!parent) return NodeFilter.FILTER_REJECT;
+                            if (excluded.includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+                            for (const s of excludeSelectors) {
+                                if (parent.closest && parent.closest(s)) return NodeFilter.FILTER_REJECT;
+                            }
+                            if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+                            return NodeFilter.FILTER_ACCEPT;
+                        }
+                    });
+
+                    const isWordChar = char => /[A-Za-z0-9_]/.test(char);
+                    const isUpper = char => /[A-ZÁÉÍÓÚÜÑ]/.test(char);
+                    const isLower = char => /[a-záéíóúüñ]/.test(char);
+
+                    const isValidTermBoundary = (text, start, length) => {
+                        const before = start > 0 ? text[start - 1] : '';
+                        const after = start + length < text.length ? text[start + length] : '';
+                        const beforeWord = isWordChar(before);
+                        const afterWord = isWordChar(after);
+
+                        if (!beforeWord && !afterWord) return true;
+                        if (!beforeWord && after && isUpper(after)) return true;
+                        if (before && isLower(before) && after && isUpper(after)) return true;
+                        if (before && isLower(before) && !afterWord && after === '') return true;
+                        return false;
+                    };
+
+                    let node;
+                    while (node = walker.nextNode()) {
+                        const originalText = node.nodeValue;
+                        const lowerText = originalText.toLowerCase();
+                        let cursor = 0;
+                        let html = '';
+
+                        while (cursor < originalText.length) {
+                            let nextMatch = null;
+                            let nextTerm = null;
+
+                            for (const term of terms) {
+                                const index = lowerText.indexOf(term, cursor);
+                                if (index === -1) continue;
+                                if (nextMatch === null || index < nextMatch || (index === nextMatch && term.length > nextTerm.length)) {
+                                    nextMatch = index;
+                                    nextTerm = term;
+                                }
+                            }
+
+                            if (nextMatch === null) {
+                                html += originalText.slice(cursor);
+                                break;
+                            }
+
+                            if (nextMatch > cursor) {
+                                html += originalText.slice(cursor, nextMatch);
+                            }
+
+                            const termStart = nextMatch;
+                            const termLength = nextTerm.length;
+                            const anchor = fallbackMap[nextTerm];
+
+                            if (isValidTermBoundary(originalText, termStart, termLength)) {
+                                const matchedText = originalText.slice(termStart, termStart + termLength);
+                                html += `<a href="${glossaryPath}#glossary-${anchor}" class="glossary-link">${matchedText}</a>`;
+                                cursor = termStart + termLength;
+                            } else {
+                                html += originalText[cursor];
+                                cursor += 1;
+                            }
+                        }
+
+                        if (html !== originalText) {
+                            const span = document.createElement('span');
+                            span.innerHTML = html;
+                            node.parentNode.replaceChild(span, node);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Autolink fallback failed', e);
                 }
             });
-
-            const terms = Object.keys(glossaryMap).sort((a, b) => b.length - a.length);
-            if (terms.length === 0) return;
-
-            const content = document.getElementById('main-content');
-            if (!content) return;
-
-            const excluded = ['A', 'SCRIPT', 'STYLE', 'CODE', 'PRE', 'NAV', 'FOOTER', 'BUTTON', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION', 'H1', 'H2', 'H3'];
-            const excludeSelectors = ['.module-card-title', '.category-name', '.sidebar-module-link', '.module-card', '.category-card', '.category-title'];
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
                 acceptNode: (node) => {
                     const parent = node.parentElement;
                     if (!parent) return NodeFilter.FILTER_REJECT;

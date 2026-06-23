@@ -36,6 +36,14 @@
   if (!searchInput) return;
 
   const normalize = (value) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    // Debounce utility
+    const debounce = (fn, wait = 220) => {
+      let t = null;
+      return (...args) => {
+        if (t) clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    };
 
   const applyFilter = () => {
     const query = normalize(searchInput.value);
@@ -82,9 +90,19 @@
   if (!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const onMove = (event) => {
+      const debouncedNotify = debounce(() => {
+        applySidebarFilter();
+        try {
+          const evt = new CustomEvent('modulo-search', { detail: { query: searchInput.value } });
+          window.dispatchEvent(evt);
+        } catch (e) {
+          // ignore
+        }
+      }, 220);
+
     const rect = hero.getBoundingClientRect();
     const rotateY = (event.clientX - (rect.left + rect.width / 2)) / 190;
-    const rotateX = ((rect.top + rect.height / 2) - event.clientY) / 230;
+        debouncedNotify();
     hero.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   };
 

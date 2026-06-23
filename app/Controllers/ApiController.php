@@ -70,6 +70,8 @@ final class ApiController
                 '_id' => $anchor,
                 'termino' => (string)($item['term'] ?? ''),
                 'definicion' => (string)($item['definition'] ?? ''),
+                'aliases' => is_array($item['aliases'] ?? null) ? $item['aliases'] : [],
+                'sub_terms' => is_array($item['sub_terms'] ?? null) ? $item['sub_terms'] : [],
                 'urlDefinicion' => $this->routePath($basePath, '/glosario/' . rawurlencode($anchor), $queryMode),
             ];
         }
