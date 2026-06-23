@@ -181,10 +181,6 @@ return [
         'term' => 'Incidencia',
         'definition' => 'Evento o situación que interrumpe el funcionamiento normal de un servicio o sistema, o que tiene el potencial de hacerlo.'
     ],
-    'campos fillable' => [
-        'term' => 'Campos Fillable',
-        'definition' => 'Propiedad en los modelos de Eloquent que define qué atributos pueden ser asignados masivamente (mass assignment) para proteger contra asignaciones no deseadas.'
-    ],
     'kebab-case' => [
         'term' => 'Kebab Case',
         'definition' => 'Estilo de nomenclatura en el que las palabras están separadas por guiones bajos o guiones, y todas las letras son minúsculas.'
@@ -273,5 +269,41 @@ return [
     'ORM Eloquent' => [
         'term' => 'ORM Eloquent',
         'definition' => 'Implementación del patrón ORM en Laravel que permite interactuar con la base de datos utilizando modelos y relaciones entre ellos.'
+    ],
+    'tabular' => [
+        'term' => 'Tabular',
+        'definition' => 'Organización de datos en forma de tabla, con filas y columnas, para facilitar su visualización y análisis.'
+    ],
+    'VPS' => [
+        'term' => 'VPS (Virtual Private Server)',
+        'definition' => 'Servidor virtual que ofrece un entorno aislado y dedicado, permitiendo la ejecución de aplicaciones y servicios de manera independiente.'
+    ],
+    'PascalCase' => [
+        'term' => 'PascalCase',
+        'definition' => 'Estilo de nomenclatura en el que cada palabra comienza con una letra mayúscula y no hay espacios ni guiones entre ellas.'
+    ],
+    'namespace' => [
+        'term' => 'Namespace',
+        'definition' => 'Espacio de nombres que organiza y agrupa clases, funciones y constantes en un programa para evitar conflictos de nombres.'
+    ],
+    'fillable' => [
+        'term' => 'Fillable',
+        'definition' => 'Propiedad en los modelos de Eloquent que define qué atributos pueden ser asignados masivamente (mass assignment) para proteger contra asignaciones no deseadas.'
+    ],
+    'slug' => [
+        'term' => 'Slug',
+        'definition' => 'Versión simplificada y legible de una cadena de texto, generalmente utilizada en URLs para identificar recursos de manera amigable.'
+    ],
+    'layout' => [
+        'term' => 'Layout',
+        'definition' => 'Estructura o diseño general de una página web o aplicación, que define la disposición de los elementos visuales y su relación entre sí.'
+    ],
+    'navbar' => [
+        'term' => 'Navbar',
+        'definition' => 'Barra de navegación que contiene enlaces y elementos interactivos para facilitar la navegación dentro de un sitio web o aplicación.'
+    ],
+    'deploy' => [
+        'term' => 'Deploy',
+        'definition' => 'Proceso de poner en producción una aplicación o sistema, haciendo que esté disponible para los usuarios finales.'
     ],
 ];
